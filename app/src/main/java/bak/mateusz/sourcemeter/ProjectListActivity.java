@@ -49,7 +49,7 @@ public class ProjectListActivity extends AppCompatActivity {
      * device.
      */
     private boolean mTwoPane;
-    private List<Result> projectList;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +87,7 @@ public class ProjectListActivity extends AppCompatActivity {
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(projectList));
+        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(ProjectsListResponse.results));
     }
 
     public class SimpleItemRecyclerViewAdapter
@@ -117,7 +117,7 @@ public class ProjectListActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     if (mTwoPane) {
                         Bundle arguments = new Bundle();
-                        arguments.putString(ProjectDetailFragment.ARG_ITEM_ID, holder.mItem.getProjectName());
+                        arguments.putInt(ProjectDetailFragment.ARG_ITEM_ID, holder.mItem.getUid());
                         ProjectDetailFragment fragment = new ProjectDetailFragment();
                         fragment.setArguments(arguments);
                         getSupportFragmentManager().beginTransaction()
@@ -126,7 +126,7 @@ public class ProjectListActivity extends AppCompatActivity {
                     } else {
                         Context context = v.getContext();
                         Intent intent = new Intent(context, ProjectDetailActivity.class);
-                        intent.putExtra(ProjectDetailFragment.ARG_ITEM_ID, holder.mItem.getProjectName());
+                        intent.putExtra(ProjectDetailFragment.ARG_ITEM_ID, holder.mItem.getUid());
 
                         context.startActivity(intent);
                     }
@@ -166,7 +166,10 @@ public class ProjectListActivity extends AppCompatActivity {
         call.enqueue(new Callback<ProjectsListResponse>() {
             @Override
             public void onResponse(Call<ProjectsListResponse> call, Response<ProjectsListResponse> response) {
-                projectList = response.body().getResult(); //TODO: Sorting the list
+                List<Result> projectList;
+                projectList = response.body().getResult();
+                ProjectsListResponse.results = projectList;
+                ProjectsListResponse.createMap(); //TODO: god class anti-pattern, sort static things out
                 View recyclerView = findViewById(R.id.project_list);
                 assert recyclerView != null;
                 setupRecyclerView((RecyclerView) recyclerView);
@@ -174,7 +177,7 @@ public class ProjectListActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ProjectsListResponse> call, Throwable t) {
-                //TODO: Failure message
+                //TODO: Failure toast message
             }
         });
     }

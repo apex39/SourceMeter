@@ -1,7 +1,6 @@
 package bak.mateusz.sourcemeter;
 
 import android.app.Activity;
-import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -12,7 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import bak.mateusz.sourcemeter.dummy.DummyContent;
+import bak.mateusz.sourcemeter.model.ProjectsListResponse;
 import bak.mateusz.sourcemeter.model.Result;
 
 /**
@@ -41,12 +40,6 @@ public class ProjectDetailFragment extends Fragment implements LoaderManager.Loa
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        getLoaderManager().initLoader(0,null,this);
-    }
-
-    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -54,7 +47,7 @@ public class ProjectDetailFragment extends Fragment implements LoaderManager.Loa
             // Load the dummy content specified by the fragment
             // arguments. In a real-world scenario, use a Loader
             // to load content from a content provider.
-            mItem = DummyContent.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
+            mItem = ProjectsListResponse.getProject(getArguments().getInt(ARG_ITEM_ID));
 
             Activity activity = this.getActivity();
             CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
@@ -69,9 +62,9 @@ public class ProjectDetailFragment extends Fragment implements LoaderManager.Loa
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.project_detail, container, false);
 
-        // Show the dummy content as text in a TextView.
+        // Show the  content as text in a TextView.
         if (mItem != null) {
-//            ((TextView) rootView.findViewById(R.id.project_detail)).setText(mItem.details);
+            ((TextView) rootView.findViewById(R.id.project_detail)).setText(mItem.getQualityModel());
         }
 
         return rootView;
