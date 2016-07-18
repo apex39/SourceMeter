@@ -49,14 +49,14 @@ public class ProjectListActivity extends AppCompatActivity {
      * device.
      */
     private boolean mTwoPane;
-
+    Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_project_list);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
 
@@ -79,11 +79,13 @@ public class ProjectListActivity extends AppCompatActivity {
             mTwoPane = true;
         }
 
-        try {
-            getProjectsList();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
+            try {
+                getProjectsList();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
@@ -123,6 +125,8 @@ public class ProjectListActivity extends AppCompatActivity {
                         getSupportFragmentManager().beginTransaction()
                                 .replace(R.id.project_detail_container, fragment)
                                 .commit();
+                        toolbar.setTitle(holder.mItem.getProjectName());
+                        v.setSelected(true);
                     } else {
                         Context context = v.getContext();
                         Intent intent = new Intent(context, ProjectDetailActivity.class);

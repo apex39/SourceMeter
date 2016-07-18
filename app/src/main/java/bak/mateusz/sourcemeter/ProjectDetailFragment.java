@@ -64,7 +64,12 @@ public class ProjectDetailFragment extends Fragment implements LoaderManager.Loa
 
         // Show the  content as text in a TextView.
         if (mItem != null) {
-            ((TextView) rootView.findViewById(R.id.project_detail)).setText(mItem.getQualityModel());
+            ((TextView) rootView.findViewById(R.id.projectLanguage)).append(mItem.getProjectLanguage());
+            ((TextView) rootView.findViewById(R.id.qualityModel)).append(mItem.getQualityModel());
+            ((TextView) rootView.findViewById(R.id.currentVersion)).append(String.valueOf(mItem.getCurrentVersion()));
+            ((TextView) rootView.findViewById(R.id.quality)).append(String.valueOf(mItem.getQuality()));
+            ((TextView) rootView.findViewById(R.id.qualityChange)).append(String.valueOf(mItem.getQualityChange()));
+            ((TextView) rootView.findViewById(R.id.threshold)).append(String.valueOf(mItem.getThreshold()));
         }
 
         return rootView;
