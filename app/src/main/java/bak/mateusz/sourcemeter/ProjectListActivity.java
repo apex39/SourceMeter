@@ -5,34 +5,23 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
-import bak.mateusz.sourcemeter.dummy.DummyContent;
-import bak.mateusz.sourcemeter.model.ProjectModel;
-import bak.mateusz.sourcemeter.model.ProjectsListResponse;
-import bak.mateusz.sourcemeter.model.Result;
-import bak.mateusz.sourcemeter.network.ServiceGenerator;
-import bak.mateusz.sourcemeter.network.SourceMeterService;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
-
-import java.io.IOException;
 import java.util.List;
+
+import bak.mateusz.sourcemeter.model.Result;
 
 /**
  * An activity representing a list of Projects. This activity
@@ -50,6 +39,8 @@ public class ProjectListActivity extends AppCompatActivity {
      */
     private boolean mTwoPane;
     Toolbar toolbar;
+    List<Result> projectsList;
+    View recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +51,9 @@ public class ProjectListActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
 
+        recyclerView = findViewById(R.id.project_list);
+        assert recyclerView != null;
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,8 +63,6 @@ public class ProjectListActivity extends AppCompatActivity {
             }
         });
 
-
-
         if (findViewById(R.id.project_detail_container) != null) {
             // The detail container view will be present only in the
             // large-screen layouts (res/values-w900dp).
@@ -78,18 +70,22 @@ public class ProjectListActivity extends AppCompatActivity {
             // activity should be in two-pane mode.
             mTwoPane = true;
         }
+    }
 
+    @Override
+    protected void onPause() {
+        EventBus.getDefault().unregister(this);
+        super.onPause();
+    }
 
-            try {
-                getProjectsList();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        EventBus.getDefault().register(this);
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(ProjectsListResponse.results));
+        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(projectsList));
     }
 
     public class SimpleItemRecyclerViewAdapter
@@ -131,7 +127,6 @@ public class ProjectListActivity extends AppCompatActivity {
                         Context context = v.getContext();
                         Intent intent = new Intent(context, ProjectDetailActivity.class);
                         intent.putExtra(ProjectDetailFragment.ARG_ITEM_ID, holder.mItem.getUid());
-
                         context.startActivity(intent);
                     }
                 }
@@ -164,25 +159,10 @@ public class ProjectListActivity extends AppCompatActivity {
             }
         }
     }
-    private void getProjectsList() throws IOException {
-        SourceMeterService sourceMeter = ServiceGenerator.createService(SourceMeterService.class);
-        Call<ProjectsListResponse> call = sourceMeter.listProjects();
-        call.enqueue(new Callback<ProjectsListResponse>() {
-            @Override
-            public void onResponse(Call<ProjectsListResponse> call, Response<ProjectsListResponse> response) {
-                List<Result> projectList;
-                projectList = response.body().getResult();
-                ProjectsListResponse.results = projectList;
-                ProjectsListResponse.createMap(); //TODO: god class anti-pattern, sort static things out
-                View recyclerView = findViewById(R.id.project_list);
-                assert recyclerView != null;
-                setupRecyclerView((RecyclerView) recyclerView);
-            }
 
-            @Override
-            public void onFailure(Call<ProjectsListResponse> call, Throwable t) {
-                //TODO: Failure toast message
-            }
-        });
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onProjectsListEvent(List<Result> event){
+        this.projectsList = event;
+        setupRecyclerView((RecyclerView) recyclerView);
     }
 }

@@ -1,17 +1,20 @@
 package bak.mateusz.sourcemeter;
 
 import android.app.Activity;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import bak.mateusz.sourcemeter.model.ProjectsListResponse;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.Map;
+
 import bak.mateusz.sourcemeter.model.Result;
 
 /**
@@ -20,16 +23,13 @@ import bak.mateusz.sourcemeter.model.Result;
  * in two-pane mode (on tablets) or a {@link ProjectDetailActivity}
  * on handsets.
  */
-public class ProjectDetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Object> {
+public class ProjectDetailFragment extends Fragment  {
     /**
      * The fragment argument representing the item ID that this fragment
      * represents.
      */
     public static final String ARG_ITEM_ID = "item_id";
 
-    /**
-     * The dummy content this fragment is presenting.
-     */
     private Result mItem;
 
     /**
@@ -38,29 +38,25 @@ public class ProjectDetailFragment extends Fragment implements LoaderManager.Loa
      */
     public ProjectDetailFragment() {
     }
+    CollapsingToolbarLayout appBarLayout;
+    Activity activity;
+    View rootView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if (getArguments().containsKey(ARG_ITEM_ID)) {
-            // Load the dummy content specified by the fragment
-            // arguments. In a real-world scenario, use a Loader
-            // to load content from a content provider.
-            mItem = ProjectsListResponse.getProject(getArguments().getInt(ARG_ITEM_ID));
-
-            Activity activity = this.getActivity();
-            CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
-            if (appBarLayout != null) {
-                appBarLayout.setTitle(mItem.getProjectName());
-            }
-        }
+        EventBus.getDefault().register(this);
+           activity = this.getActivity();
+           appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.project_detail, container, false);
+        rootView = inflater.inflate(R.layout.project_detail, container, false);
+        if (appBarLayout != null) {
+            appBarLayout.setTitle(mItem.getProjectName());
+        }
 
         // Show the  content as text in a TextView.
         if (mItem != null) {
@@ -71,22 +67,18 @@ public class ProjectDetailFragment extends Fragment implements LoaderManager.Loa
             ((TextView) rootView.findViewById(R.id.qualityChange)).append(String.valueOf(mItem.getQualityChange()));
             ((TextView) rootView.findViewById(R.id.threshold)).append(String.valueOf(mItem.getThreshold()));
         }
-
         return rootView;
     }
 
-    @Override
-    public Loader<Object> onCreateLoader(int id, Bundle args) {
-        return null;
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onProjectsListEvent(Map<Integer, Result> event){
+        if (getArguments().containsKey(ARG_ITEM_ID))
+            this.mItem = event.get(getArguments().getInt(ARG_ITEM_ID));
     }
 
     @Override
-    public void onLoadFinished(Loader<Object> loader, Object data) {
-
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Object> loader) {
-
+    public void onPause() {
+        EventBus.getDefault().unregister(this);
+        super.onPause();
     }
 }

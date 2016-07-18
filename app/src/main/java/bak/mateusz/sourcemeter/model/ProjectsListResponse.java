@@ -22,19 +22,6 @@ public class ProjectsListResponse {
 
     public static List<Result> results;
 
-    static Map<Integer, Result> ITEM_MAP = new HashMap<Integer, Result>();
-
-    public static void createMap() {
-
-        //create map to get project deatils easily by fragment using uid
-        for (Result project : results) {
-            ITEM_MAP.put(project.getUid(),project);
-        }
-    }
-
-    public static Result getProject(int anInt) {
-        return ITEM_MAP.get(anInt);
-    }
 
     /**
      *

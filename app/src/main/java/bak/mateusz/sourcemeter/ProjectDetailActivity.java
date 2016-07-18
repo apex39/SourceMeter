@@ -11,15 +11,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 
-import java.io.IOException;
-import java.util.List;
-
-import bak.mateusz.sourcemeter.model.ProjectModel;
-import bak.mateusz.sourcemeter.network.SourceMeterService;
-import retrofit2.Call;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
-
 /**
  * An activity representing a single Project detail screen. This
  * activity is only used narrow width devices. On tablet-size devices,
