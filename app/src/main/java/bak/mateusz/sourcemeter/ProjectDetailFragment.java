@@ -16,6 +16,9 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.Map;
 
 import bak.mateusz.sourcemeter.model.Result;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 
 /**
  * A fragment representing a single Project detail screen.
@@ -24,48 +27,60 @@ import bak.mateusz.sourcemeter.model.Result;
  * on handsets.
  */
 public class ProjectDetailFragment extends Fragment  {
+    Activity activity;
+
+    View rootView;
+
+    CollapsingToolbarLayout appBarLayout;
+    @BindView(R.id.projectLanguage) TextView projectLanguage;
+    @BindView(R.id.qualityModel) TextView qualityModel;
+    @BindView(R.id.currentVersion) TextView currentVersion;
+    @BindView(R.id.quality) TextView quality;
+    @BindView(R.id.qualityChange) TextView qualityChange;
+    @BindView(R.id.threshold) TextView threshold;
+    private Unbinder unbinder;
+    private Result mItem;
     /**
      * The fragment argument representing the item ID that this fragment
      * represents.
      */
     public static final String ARG_ITEM_ID = "item_id";
-
-    private Result mItem;
-
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
     public ProjectDetailFragment() {
     }
-    CollapsingToolbarLayout appBarLayout;
-    Activity activity;
-    View rootView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         EventBus.getDefault().register(this);
-           activity = this.getActivity();
-           appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
+
+        activity = this.getActivity();
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.project_detail, container, false);
+        unbinder = ButterKnife.bind(this,rootView);
+        appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
+
         if (appBarLayout != null) {
             appBarLayout.setTitle(mItem.getProjectName());
         }
 
         // Show the  content as text in a TextView.
         if (mItem != null) {
-            ((TextView) rootView.findViewById(R.id.projectLanguage)).append(mItem.getProjectLanguage());
-            ((TextView) rootView.findViewById(R.id.qualityModel)).append(mItem.getQualityModel());
-            ((TextView) rootView.findViewById(R.id.currentVersion)).append(String.valueOf(mItem.getCurrentVersion()));
-            ((TextView) rootView.findViewById(R.id.quality)).append(String.valueOf(mItem.getQuality()));
-            ((TextView) rootView.findViewById(R.id.qualityChange)).append(String.valueOf(mItem.getQualityChange()));
-            ((TextView) rootView.findViewById(R.id.threshold)).append(String.valueOf(mItem.getThreshold()));
+            projectLanguage.append(mItem.getProjectLanguage());
+            qualityModel.append(mItem.getQualityModel());
+            currentVersion.append(String.valueOf(mItem.getCurrentVersion()));
+            quality.append(String.valueOf(mItem.getQuality()));
+            qualityChange.append(String.valueOf(mItem.getQualityChange()));
+            threshold.append(String.valueOf(mItem.getThreshold()));
         }
         return rootView;
     }
@@ -80,5 +95,11 @@ public class ProjectDetailFragment extends Fragment  {
     public void onPause() {
         EventBus.getDefault().unregister(this);
         super.onPause();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
     }
 }

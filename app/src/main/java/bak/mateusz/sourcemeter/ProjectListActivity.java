@@ -22,6 +22,9 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.List;
 
 import bak.mateusz.sourcemeter.model.Result;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
  * An activity representing a list of Projects. This activity
@@ -32,46 +35,44 @@ import bak.mateusz.sourcemeter.model.Result;
  * item details side-by-side using two vertical panes.
  */
 public class ProjectListActivity extends AppCompatActivity {
-
-    /**
-     * Whether or not the activity is in two-pane mode, i.e. running on a tablet
-     * device.
-     */
     private boolean mTwoPane;
-    Toolbar toolbar;
+    public static final String CHECKED_PROJECT_NAME = "checkedProjectName";
+
+    @BindView(R.id.toolbar) Toolbar toolbar;
+    @BindView(R.id.project_list) View recyclerView;
+    @BindView(R.id.fab) FloatingActionButton fab;
     List<Result> projectsList;
-    View recyclerView;
+    String checkedProjectName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_project_list);
+        ButterKnife.bind(this);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
 
-        recyclerView = findViewById(R.id.project_list);
-        assert recyclerView != null;
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
+        if(savedInstanceState != null){
+            String checkedTitle = savedInstanceState.getString(CHECKED_PROJECT_NAME);
+            this.checkedProjectName = checkedTitle;
+        }
         if (findViewById(R.id.project_detail_container) != null) {
             // The detail container view will be present only in the
             // large-screen layouts (res/values-w900dp).
             // If this view is present, then the
             // activity should be in two-pane mode.
             mTwoPane = true;
+            if(savedInstanceState != null){
+                toolbar.setSubtitle(checkedProjectName);
+            }
         }
     }
-
+    @OnClick(R.id.fab)
+    public void fabAction(View view) {
+        Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show();
+    }
     @Override
     protected void onPause() {
         EventBus.getDefault().unregister(this);
@@ -121,8 +122,9 @@ public class ProjectListActivity extends AppCompatActivity {
                         getSupportFragmentManager().beginTransaction()
                                 .replace(R.id.project_detail_container, fragment)
                                 .commit();
-                        toolbar.setTitle(holder.mItem.getProjectName());
+                        toolbar.setSubtitle(holder.mItem.getProjectName());
                         v.setSelected(true);
+                        checkedProjectName = holder.mItem.getProjectName(); //To save project name on screen rotation
                     } else {
                         Context context = v.getContext();
                         Intent intent = new Intent(context, ProjectDetailActivity.class);
@@ -140,23 +142,22 @@ public class ProjectListActivity extends AppCompatActivity {
 
         public class ViewHolder extends RecyclerView.ViewHolder {
             public final View mView;
-            public final TextView mIdView;
-            public final TextView mContentView;
+            @BindView(android.R.id.text1) TextView mIdView;
+            @BindView(android.R.id.text2) TextView mContentView;
             public Result mItem;
-
             public ViewHolder(View view) {
                 super(view);
+                ButterKnife.bind(this, view);
                 mView = view;
-                mIdView = (TextView) view.findViewById(android.R.id.text1);
                 mIdView.setTypeface(null, Typeface.BOLD);
                 mIdView.setTextSize(18);
-                mContentView = (TextView) view.findViewById(android.R.id.text2);
             }
 
             @Override
             public String toString() {
                 return super.toString() + " '" + mContentView.getText() + "'";
             }
+
         }
     }
 
@@ -164,5 +165,12 @@ public class ProjectListActivity extends AppCompatActivity {
     public void onProjectsListEvent(List<Result> event){
         this.projectsList = event;
         setupRecyclerView((RecyclerView) recyclerView);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        if(checkedProjectName != null)
+            outState.putString(CHECKED_PROJECT_NAME,checkedProjectName);
+        super.onSaveInstanceState(outState);
     }
 }
