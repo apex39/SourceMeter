@@ -28,9 +28,7 @@ import butterknife.Unbinder;
  */
 public class ProjectDetailFragment extends Fragment  {
     Activity activity;
-
     View rootView;
-
     CollapsingToolbarLayout appBarLayout;
     @BindView(R.id.projectLanguage) TextView projectLanguage;
     @BindView(R.id.qualityModel) TextView qualityModel;
@@ -55,11 +53,8 @@ public class ProjectDetailFragment extends Fragment  {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         EventBus.getDefault().register(this);
-
         activity = this.getActivity();
-
     }
 
     @Override

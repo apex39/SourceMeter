@@ -29,7 +29,7 @@ public class Application extends android.app.Application {
         super.onCreate();
     }
 
-    private void getProjectsList() throws IOException {
+    public void getProjectsList() throws IOException {
         SourceMeterService sourceMeter = ServiceGenerator.createService(SourceMeterService.class);
         Call<ProjectsListResponse> call = sourceMeter.listProjects();
         call.enqueue(new Callback<ProjectsListResponse>() {
@@ -45,7 +45,7 @@ public class Application extends android.app.Application {
 
             @Override
             public void onFailure(Call<ProjectsListResponse> call, Throwable t) {
-                //TODO: Failure toast message
+                EventBus.getDefault().post(t);
             }
         });
     }

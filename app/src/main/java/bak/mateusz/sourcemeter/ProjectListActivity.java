@@ -35,6 +35,7 @@ import butterknife.OnClick;
  * item details side-by-side using two vertical panes.
  */
 public class ProjectListActivity extends AppCompatActivity {
+    public static final String PROJECT_LIST_OBTAINED = "isProjectListObtained";
     private boolean mTwoPane;
     public static final String CHECKED_PROJECT_NAME = "checkedProjectName";
 
@@ -43,6 +44,7 @@ public class ProjectListActivity extends AppCompatActivity {
     @BindView(R.id.fab) FloatingActionButton fab;
     List<Result> projectsList;
     String checkedProjectName;
+    Boolean isDataObtained;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +58,13 @@ public class ProjectListActivity extends AppCompatActivity {
         if(savedInstanceState != null){
             String checkedTitle = savedInstanceState.getString(CHECKED_PROJECT_NAME);
             this.checkedProjectName = checkedTitle;
+            this.isDataObtained = savedInstanceState.getBoolean(PROJECT_LIST_OBTAINED);
+                   /*Keep snackbar showed on screen rotation if no project list is obtained*/
+            if(isDataObtained == false)
+                onNetworkError(null);
         }
+
+
         if (findViewById(R.id.project_detail_container) != null) {
             // The detail container view will be present only in the
             // large-screen layouts (res/values-w900dp).
@@ -157,7 +165,6 @@ public class ProjectListActivity extends AppCompatActivity {
             public String toString() {
                 return super.toString() + " '" + mContentView.getText() + "'";
             }
-
         }
     }
 
@@ -166,11 +173,25 @@ public class ProjectListActivity extends AppCompatActivity {
         this.projectsList = event;
         setupRecyclerView((RecyclerView) recyclerView);
     }
-
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onNetworkError(Throwable t){
+        final Snackbar snackbar = Snackbar.make(recyclerView, "Cannot download projects list", Snackbar.LENGTH_LONG);
+        snackbar.setAction("Retry", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        getApplication().onCreate();
+                        snackbar.dismiss();
+                    }
+                }).setDuration(Snackbar.LENGTH_INDEFINITE);
+        snackbar.show();
+        isDataObtained = false;
+    }
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         if(checkedProjectName != null)
-            outState.putString(CHECKED_PROJECT_NAME,checkedProjectName);
+            outState.putString(CHECKED_PROJECT_NAME, checkedProjectName);
+        if(isDataObtained != null)
+            outState.putBoolean(PROJECT_LIST_OBTAINED, isDataObtained);
         super.onSaveInstanceState(outState);
     }
 }
