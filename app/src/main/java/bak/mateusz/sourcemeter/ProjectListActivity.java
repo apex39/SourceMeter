@@ -35,16 +35,15 @@ import butterknife.OnClick;
  * item details side-by-side using two vertical panes.
  */
 public class ProjectListActivity extends AppCompatActivity {
-    public static final String PROJECT_LIST_OBTAINED = "isProjectListObtained";
-    private boolean mTwoPane;
     public static final String CHECKED_PROJECT_NAME = "checkedProjectName";
+    private boolean mTwoPane;
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.project_list) View recyclerView;
     @BindView(R.id.fab) FloatingActionButton fab;
+    Snackbar snackbar;
     List<Result> projectsList;
     String checkedProjectName;
-    Boolean isDataObtained;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,28 +53,33 @@ public class ProjectListActivity extends AppCompatActivity {
 
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
-
         if(savedInstanceState != null){
             String checkedTitle = savedInstanceState.getString(CHECKED_PROJECT_NAME);
             this.checkedProjectName = checkedTitle;
-            this.isDataObtained = savedInstanceState.getBoolean(PROJECT_LIST_OBTAINED);
-                   /*Keep snackbar showed on screen rotation if no project list is obtained*/
-            if(isDataObtained == false)
-                onNetworkError(null);
         }
 
+        setSnackbar(); //TODO: don't show snackbar for a while at the very beggining, add waiting process
 
         if (findViewById(R.id.project_detail_container) != null) {
-            // The detail container view will be present only in the
-            // large-screen layouts (res/values-w900dp).
-            // If this view is present, then the
-            // activity should be in two-pane mode.
+            fab.show();
             mTwoPane = true;
             if(savedInstanceState != null){
                 toolbar.setSubtitle(checkedProjectName);
             }
         }
     }
+
+    private void setSnackbar() {
+        snackbar = Snackbar.make(recyclerView, "Cannot download projects list", Snackbar.LENGTH_LONG);
+        snackbar.setAction("Retry", new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getApplication().onCreate(); //TODO: unsafe
+                snackbar.dismiss();
+            }
+        }).setDuration(Snackbar.LENGTH_INDEFINITE);
+    }
+
     @OnClick(R.id.fab)
     public void fabAction(View view) {
         Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
@@ -91,6 +95,9 @@ public class ProjectListActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         EventBus.getDefault().register(this);
+
+        /*Keep snackbar showed on screen rotation if no project list is obtained*/
+        if(projectsList == null) snackbar.show();
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
@@ -171,27 +178,18 @@ public class ProjectListActivity extends AppCompatActivity {
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void onProjectsListEvent(List<Result> event){
         this.projectsList = event;
+        snackbar.dismiss();
         setupRecyclerView((RecyclerView) recyclerView);
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onNetworkError(Throwable t){
-        final Snackbar snackbar = Snackbar.make(recyclerView, "Cannot download projects list", Snackbar.LENGTH_LONG);
-        snackbar.setAction("Retry", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        getApplication().onCreate();
-                        snackbar.dismiss();
-                    }
-                }).setDuration(Snackbar.LENGTH_INDEFINITE);
+        setSnackbar();
         snackbar.show();
-        isDataObtained = false;
     }
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         if(checkedProjectName != null)
             outState.putString(CHECKED_PROJECT_NAME, checkedProjectName);
-        if(isDataObtained != null)
-            outState.putBoolean(PROJECT_LIST_OBTAINED, isDataObtained);
         super.onSaveInstanceState(outState);
     }
 }
