@@ -15,7 +15,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.Map;
 
-import bak.mateusz.sourcemeter.model.Result;
+import bak.mateusz.sourcemeter.model.Project;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -37,7 +37,7 @@ public class ProjectDetailFragment extends Fragment  {
     @BindView(R.id.qualityChange) TextView qualityChange;
     @BindView(R.id.threshold) TextView threshold;
     private Unbinder unbinder;
-    private Result mItem;
+    private Project mItem;
     /**
      * The fragment argument representing the item ID that this fragment
      * represents.
@@ -81,7 +81,7 @@ public class ProjectDetailFragment extends Fragment  {
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
-    public void onProjectsListEvent(Map<Integer, Result> event){
+    public void onProjectsListEvent(Map<Integer, Project> event){
         if (getArguments().containsKey(ARG_ITEM_ID))
             this.mItem = event.get(getArguments().getInt(ARG_ITEM_ID));
     }

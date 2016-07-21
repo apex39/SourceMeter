@@ -21,7 +21,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
 
-import bak.mateusz.sourcemeter.model.Result;
+import bak.mateusz.sourcemeter.model.Project;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -42,7 +42,7 @@ public class ProjectListActivity extends AppCompatActivity {
     @BindView(R.id.project_list) View recyclerView;
     @BindView(R.id.fab) FloatingActionButton fab;
     Snackbar snackbar;
-    List<Result> projectsList;
+    List<Project> projectsList;
     String checkedProjectName;
 
     @Override
@@ -107,9 +107,9 @@ public class ProjectListActivity extends AppCompatActivity {
     public class SimpleItemRecyclerViewAdapter
             extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
-        private final List<Result> mValues;
+        private final List<Project> mValues;
 
-        public SimpleItemRecyclerViewAdapter(List<Result> items) {
+        public SimpleItemRecyclerViewAdapter(List<Project> items) {
             mValues = items;
         }
 
@@ -159,7 +159,7 @@ public class ProjectListActivity extends AppCompatActivity {
             public final View mView;
             @BindView(android.R.id.text1) TextView mIdView;
             @BindView(android.R.id.text2) TextView mContentView;
-            public Result mItem;
+            public Project mItem;
             public ViewHolder(View view) {
                 super(view);
                 ButterKnife.bind(this, view);
@@ -176,7 +176,7 @@ public class ProjectListActivity extends AppCompatActivity {
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
-    public void onProjectsListEvent(List<Result> event){
+    public void onProjectsListEvent(List<Project> event){
         this.projectsList = event;
         snackbar.dismiss();
         setupRecyclerView((RecyclerView) recyclerView);

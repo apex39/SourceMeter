@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import bak.mateusz.sourcemeter.model.ProjectsListResponse;
-import bak.mateusz.sourcemeter.model.Result;
+import bak.mateusz.sourcemeter.model.Project;
 import bak.mateusz.sourcemeter.network.ServiceGenerator;
 import bak.mateusz.sourcemeter.network.SourceMeterService;
 import retrofit2.Call;
@@ -35,11 +35,11 @@ public class Application extends android.app.Application {
         call.enqueue(new Callback<ProjectsListResponse>() {
             @Override
             public void onResponse(Call<ProjectsListResponse> call, Response<ProjectsListResponse> response) {
-                List<Result> projectList;
-                projectList = response.body().getResult();
+                List<Project> projectList;
+                projectList = response.body().getProject();
                 EventBus.getDefault().postSticky(projectList);
 
-                Map<Integer, Result> projectsMap = createMap(projectList);
+                Map<Integer, Project> projectsMap = createMap(projectList);
                 EventBus.getDefault().postSticky(projectsMap);
             }
 
@@ -50,11 +50,11 @@ public class Application extends android.app.Application {
         });
     }
 
-    private Map<Integer, Result> createMap(List<Result> results) {
+    private Map<Integer, Project> createMap(List<Project> projects) {
         /*create map to get project deatils easily by fragment using uid*/
-        Map<Integer, Result> itemMap = new HashMap<Integer, Result>();
+        Map<Integer, Project> itemMap = new HashMap<Integer, Project>();
 
-        for (Result project : results) {
+        for (Project project : projects) {
             itemMap.put(project.getUid(),project);
         }
         return itemMap;

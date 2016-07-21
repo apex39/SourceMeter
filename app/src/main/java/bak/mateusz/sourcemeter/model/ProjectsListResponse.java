@@ -2,43 +2,39 @@
 package bak.mateusz.sourcemeter.model;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-
-import bak.mateusz.sourcemeter.model.Status;
 
 public class ProjectsListResponse {
 
     @SerializedName("result")
     @Expose
-    private List<Result> result = new ArrayList<Result>();
+    private List<Project> project = new ArrayList<Project>();
     @SerializedName("status")
     @Expose
     private Status status;
 
-    public static List<Result> results;
+    public static List<Project> projects;
 
 
     /**
      *
      * @return
-     *     The result
+     *     The project
      */
-    public List<Result> getResult() {
-        return result;
+    public List<Project> getProject() {
+        return project;
     }
 
     /**
      *
-     * @param result
-     *     The result
+     * @param project
+     *     The project
      */
-    public void setResult(List<Result> result) {
-        this.result = result;
+    public void setProject(List<Project> project) {
+        this.project = project;
     }
 
     /**
