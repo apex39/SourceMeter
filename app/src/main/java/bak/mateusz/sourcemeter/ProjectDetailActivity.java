@@ -82,5 +82,4 @@ public class ProjectDetailActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
 }
