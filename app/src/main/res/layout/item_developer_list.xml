@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+ android:layout_width="match_parent"
+    android:layout_height="60dp" android:gravity="center">
+        <TextView
+            android:id="@+id/developer_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/black"
+            android:textSize="16sp"
+            android:typeface="normal"
+            android:textStyle="bold"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:text="Developer"/>
+        <TextView
+            android:id="@+id/quality_change"
+            android:textSize="14sp"
+            android:typeface="sans"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/positiveChange"
+            android:text="qualityChange"
+            android:layout_alignBottom="@+id/developer_name"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
+        <TextView
+            android:id="@+id/commits_number"
+            android:textSize="14sp"
+            android:typeface="sans"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Commits number"
+            android:layout_below="@+id/developer_name"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+</RelativeLayout>
