@@ -164,8 +164,6 @@ public class ProjectListActivity extends AppCompatActivity {
                 super(view);
                 ButterKnife.bind(this, view);
                 mView = view;
-//                mIdView.setTypeface(null, Typeface.BOLD);
-//                mIdView.setTextSize(18);
             }
 
             @Override

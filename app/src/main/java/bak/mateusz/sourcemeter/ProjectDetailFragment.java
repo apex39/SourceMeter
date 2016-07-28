@@ -73,7 +73,6 @@ public class ProjectDetailFragment extends Fragment  {
             appBarLayout.setTitle(mItem.getProjectName());
         }
 
-        // Show the  content as text in a TextView.
         if (mItem != null) {
             projectDetails.setAdapter(sectionAdapter);
             projectDetails.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -85,7 +84,6 @@ public class ProjectDetailFragment extends Fragment  {
     public void onProjectsListEvent(Map<Integer, Project> event){
         if (getArguments().containsKey(ARG_ITEM_ID))
             this.mItem = event.get(getArguments().getInt(ARG_ITEM_ID));
-        sectionAdapter.notifyDataSetChanged();
     }
 
     @Override
