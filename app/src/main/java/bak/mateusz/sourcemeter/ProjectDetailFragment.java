@@ -65,7 +65,7 @@ public class ProjectDetailFragment extends Fragment  {
         unbinder = ButterKnife.bind(this,rootView);
         appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
         sectionAdapter = new SectionedRecyclerViewAdapter();
-        sectionAdapter.addSection(new RecyclerViewSection(Project.getProjectStringDetails(mItem, getContext()),"Project details"));
+        sectionAdapter.addSection(new ProjectDetailsSection(Project.getProjectStringDetails(mItem, getContext()),"Project details"));
 
         if (appBarLayout != null) {
             appBarLayout.setTitle(mItem.getProjectName());
@@ -96,11 +96,11 @@ public class ProjectDetailFragment extends Fragment  {
         unbinder.unbind();
     }
 
-    class RecyclerViewSection extends StatelessSection {
+    class ProjectDetailsSection extends StatelessSection {
         List<Project.StringPair> items;
         String title;
 
-        public RecyclerViewSection(List<Project.StringPair> items, String title) {
+        public ProjectDetailsSection(List<Project.StringPair> items, String title) {
             super(R.layout.list_header, R.layout.item_list);
             this.title = title;
             this.items = items;
@@ -134,11 +134,59 @@ public class ProjectDetailFragment extends Fragment  {
             headerViewHolder.header.setText(title);
         }
     }
+    class DevelopersSection extends StatelessSection {
+        List<Project.StringPair> items;
+        String title;
+
+        public DevelopersSection(List<Project.StringPair> items, String title) {
+            super(R.layout.list_header, R.layout.item_developer_list);
+            this.title = title;
+            this.items = items;
+        }
+
+        @Override
+        public int getContentItemsTotal() {
+            return items.size();
+        }
+
+        @Override
+        public RecyclerView.ViewHolder getItemViewHolder(View view) {
+            return new ItemViewHolder(view);
+        }
+
+        @Override
+        public void onBindItemViewHolder(RecyclerView.ViewHolder holder, int position) {
+            DeveloperItemHolder itemHolder = (DeveloperItemHolder) holder;
+            itemHolder.developerName.setText(items.get(position).getFristString());
+            itemHolder.qualityChange.setText(items.get(position).getFristString());
+            itemHolder.commitsNumber.setText(items.get(position).getFristString());
+        }
+
+        @Override
+        public RecyclerView.ViewHolder getHeaderViewHolder(View view) {
+            return new HeaderViewHolder(view);
+        }
+
+        @Override
+        public void onBindHeaderViewHolder(RecyclerView.ViewHolder holder) {
+            HeaderViewHolder headerViewHolder = (HeaderViewHolder) holder;
+            headerViewHolder.header.setText(title);
+        }
+    }
 
     class ItemViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.text1) TextView text1;
         @BindView(R.id.text2) TextView text2;
         public ItemViewHolder(View view) {
+            super(view);
+            ButterKnife.bind(this, view);
+        }
+    }
+    class DeveloperItemHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.developer_name) TextView developerName;
+        @BindView(R.id.quality_change) TextView qualityChange;
+        @BindView(R.id.commits_number) TextView commitsNumber;
+        public DeveloperItemHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
         }
