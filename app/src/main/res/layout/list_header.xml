@@ -16,12 +16,7 @@
         tools:text="Title test text"
         android:textColor="@color/colorPrimaryDark"
         android:textStyle="bold"
-        android:textSize="16sp"
+        android:textSize="19sp"
         android:id="@+id/headerTitle" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/colorAccent"
-        android:layout_alignParentBottom="true"/>
 </RelativeLayout>
