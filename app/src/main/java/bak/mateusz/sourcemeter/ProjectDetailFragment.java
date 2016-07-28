@@ -1,9 +1,12 @@
 package bak.mateusz.sourcemeter;
 
 import android.app.Activity;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,12 +16,16 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import bak.mateusz.sourcemeter.model.Project;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import io.github.luizgrp.sectionedrecyclerviewadapter.SectionedRecyclerViewAdapter;
+import io.github.luizgrp.sectionedrecyclerviewadapter.StatelessSection;
 
 /**
  * A fragment representing a single Project detail screen.
@@ -30,12 +37,8 @@ public class ProjectDetailFragment extends Fragment  {
     Activity activity;
     View rootView;
     CollapsingToolbarLayout appBarLayout;
-    @BindView(R.id.projectLanguage) TextView projectLanguage;
-    @BindView(R.id.qualityModel) TextView qualityModel;
-    @BindView(R.id.currentVersion) TextView currentVersion;
-    @BindView(R.id.quality) TextView quality;
-    @BindView(R.id.qualityChange) TextView qualityChange;
-    @BindView(R.id.threshold) TextView threshold;
+    @BindView(R.id.project_details) RecyclerView projectDetails;
+    private SectionedRecyclerViewAdapter sectionAdapter;
     private Unbinder unbinder;
     private Project mItem;
     /**
@@ -63,6 +66,8 @@ public class ProjectDetailFragment extends Fragment  {
         rootView = inflater.inflate(R.layout.project_detail, container, false);
         unbinder = ButterKnife.bind(this,rootView);
         appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
+        sectionAdapter = new SectionedRecyclerViewAdapter();
+        sectionAdapter.addSection(new RecyclerViewSection(Project.getProjectStringDetails(mItem, getContext()),"Project details"));
 
         if (appBarLayout != null) {
             appBarLayout.setTitle(mItem.getProjectName());
@@ -70,12 +75,8 @@ public class ProjectDetailFragment extends Fragment  {
 
         // Show the  content as text in a TextView.
         if (mItem != null) {
-            projectLanguage.append(mItem.getProjectLanguage());
-            qualityModel.append(mItem.getQualityModel());
-            currentVersion.append(String.valueOf(mItem.getCurrentVersion()));
-            quality.append(String.valueOf(mItem.getQuality()));
-            qualityChange.append(String.valueOf(mItem.getQualityChange()));
-            threshold.append(String.valueOf(mItem.getThreshold()));
+            projectDetails.setAdapter(sectionAdapter);
+            projectDetails.setLayoutManager(new LinearLayoutManager(getContext()));
         }
         return rootView;
     }
@@ -84,6 +85,7 @@ public class ProjectDetailFragment extends Fragment  {
     public void onProjectsListEvent(Map<Integer, Project> event){
         if (getArguments().containsKey(ARG_ITEM_ID))
             this.mItem = event.get(getArguments().getInt(ARG_ITEM_ID));
+        sectionAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -96,5 +98,61 @@ public class ProjectDetailFragment extends Fragment  {
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+    }
+
+    class RecyclerViewSection extends StatelessSection {
+        List<Project.StringPair> items;
+        String title;
+
+        public RecyclerViewSection(List<Project.StringPair> items, String title) {
+            super(R.layout.list_header, R.layout.item_list);
+            this.title = title;
+            this.items = items;
+        }
+
+        @Override
+        public int getContentItemsTotal() {
+            return items.size();
+        }
+
+        @Override
+        public RecyclerView.ViewHolder getItemViewHolder(View view) {
+            return new ItemViewHolder(view);
+        }
+
+        @Override
+        public void onBindItemViewHolder(RecyclerView.ViewHolder holder, int position) {
+            ItemViewHolder itemHolder = (ItemViewHolder) holder;
+            itemHolder.text1.setText(items.get(position).getFristString());
+            itemHolder.text2.setText(items.get(position).getSecondString());
+        }
+
+        @Override
+        public RecyclerView.ViewHolder getHeaderViewHolder(View view) {
+            return new HeaderViewHolder(view);
+        }
+
+        @Override
+        public void onBindHeaderViewHolder(RecyclerView.ViewHolder holder) {
+            HeaderViewHolder headerViewHolder = (HeaderViewHolder) holder;
+            headerViewHolder.header.setText(title);
+        }
+    }
+
+    class ItemViewHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.text1) TextView text1;
+        @BindView(R.id.text2) TextView text2;
+        public ItemViewHolder(View view) {
+            super(view);
+            ButterKnife.bind(this, view);
+        }
+    }
+
+    class HeaderViewHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.headerTitle) TextView header;
+        public HeaderViewHolder(View view) {
+            super(view);
+            ButterKnife.bind(this, view);
+        }
     }
 }

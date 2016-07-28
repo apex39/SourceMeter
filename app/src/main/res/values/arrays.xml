@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="project_details">
+        <item>Project language</item>
+        <item>Quality model</item>
+        <item>Current version</item>
+        <item>Quality</item>
+        <item>Quality change</item>
+        <item>Threshold</item>
+    </string-array>
+</resources>

@@ -1,10 +1,20 @@
 
 package bak.mateusz.sourcemeter.model;
 
+import android.content.Context;
+import android.content.res.Resources;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import bak.mateusz.sourcemeter.R;
 
 public class Project {
 
@@ -177,4 +187,38 @@ public class Project {
         this.uid = uid;
     }
 
+    public static List<StringPair> getProjectStringDetails(Project project, Context context) {
+        /*create map to get project deatils as strings */
+        List<StringPair> itemList = new ArrayList<>();
+        Resources res = context.getResources();
+        String[] projectDetails = res.getStringArray(R.array.project_details);
+
+        itemList.add(new StringPair(projectDetails[0],project.getProjectLanguage()));
+        itemList.add(new StringPair(projectDetails[1],project.getQualityModel()));
+        itemList.add(new StringPair(projectDetails[2],project.getCurrentVersion().toString()));
+        itemList.add(new StringPair(projectDetails[3],project.getQuality().toString()));
+        itemList.add(new StringPair(projectDetails[4],project.getQualityChange().toString()));
+        itemList.add(new StringPair(projectDetails[5],project.getThreshold().toString()));
+
+        return itemList;
+    }
+
+    public static class StringPair {
+        String fristString;
+
+        String secondString;
+
+        public StringPair(String fristString, String secondString) {
+            this.fristString = fristString;
+            this.secondString = secondString;
+        }
+
+        public String getFristString() {
+            return fristString;
+        }
+
+        public String getSecondString() {
+            return secondString;
+        }
+    }
 }

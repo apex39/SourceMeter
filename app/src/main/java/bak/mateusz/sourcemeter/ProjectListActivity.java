@@ -40,7 +40,7 @@ public class ProjectListActivity extends AppCompatActivity {
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.project_list) View recyclerView;
-    @BindView(R.id.fab) FloatingActionButton fab;
+    @BindView(R.id.charts) FloatingActionButton chartsButton;
     Snackbar snackbar;
     List<Project> projectsList;
     String checkedProjectName;
@@ -61,7 +61,7 @@ public class ProjectListActivity extends AppCompatActivity {
         setSnackbar(); //TODO: don't show snackbar for a while at the very beggining, add waiting process
 
         if (findViewById(R.id.project_detail_container) != null) {
-            fab.show();
+            chartsButton.show();
             mTwoPane = true;
             if(savedInstanceState != null){
                 toolbar.setSubtitle(checkedProjectName);
@@ -80,7 +80,7 @@ public class ProjectListActivity extends AppCompatActivity {
         }).setDuration(Snackbar.LENGTH_INDEFINITE);
     }
 
-    @OnClick(R.id.fab)
+    @OnClick(R.id.charts)
     public void fabAction(View view) {
         Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show();
@@ -116,7 +116,7 @@ public class ProjectListActivity extends AppCompatActivity {
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext())
-                    .inflate(android.R.layout.simple_list_item_2, parent, false);
+                    .inflate(R.layout.item_list, parent, false);
             return new ViewHolder(view);
         }
 
@@ -157,15 +157,15 @@ public class ProjectListActivity extends AppCompatActivity {
 
         public class ViewHolder extends RecyclerView.ViewHolder {
             public final View mView;
-            @BindView(android.R.id.text1) TextView mIdView;
-            @BindView(android.R.id.text2) TextView mContentView;
+            @BindView(R.id.text1) TextView mIdView;
+            @BindView(R.id.text2) TextView mContentView;
             public Project mItem;
             public ViewHolder(View view) {
                 super(view);
                 ButterKnife.bind(this, view);
                 mView = view;
-                mIdView.setTypeface(null, Typeface.BOLD);
-                mIdView.setTextSize(18);
+//                mIdView.setTypeface(null, Typeface.BOLD);
+//                mIdView.setTextSize(18);
             }
 
             @Override
