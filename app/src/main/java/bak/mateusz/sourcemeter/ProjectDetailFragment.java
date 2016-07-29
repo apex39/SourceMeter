@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,6 +16,8 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -163,7 +166,19 @@ public class ProjectDetailFragment extends Fragment  {
         public void onBindItemViewHolder(RecyclerView.ViewHolder holder, int position) {
             DeveloperItemHolder itemHolder = (DeveloperItemHolder) holder;
             itemHolder.developerName.setText(items.get(position).getName());
-            itemHolder.qualityChange.setText(items.get(position).getQualityChange().toString());
+
+            Double qualityChange = items.get(position).getQualityChange();
+            String qualityChangeString = getRoundedString(qualityChange);
+            if(qualityChange < 0){
+                itemHolder.qualityChange.setTextColor(ContextCompat.getColor(getContext(),R.color.negativeChange));
+                itemHolder.qualityChange.setText("");
+            }
+            else {
+                itemHolder.qualityChange.setTextColor(ContextCompat.getColor(getContext(),R.color.positiveChange));
+                itemHolder.qualityChange.setText("+");
+            }
+            itemHolder.qualityChange.append(qualityChangeString + "%");
+
             itemHolder.commitsNumber.setText(items.get(position).getCommits().toString());
         }
 
@@ -212,5 +227,11 @@ public class ProjectDetailFragment extends Fragment  {
         sectionAdapter.notifyDataSetChanged();
         EventBus.getDefault().removeStickyEvent(event);
 
+    }
+
+    static final private DecimalFormat df = new DecimalFormat("#.####");
+    private String getRoundedString(double value){
+        df.setRoundingMode(RoundingMode.CEILING);
+        return df.format(value);
     }
 }
