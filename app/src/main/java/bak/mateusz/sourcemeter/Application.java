@@ -9,6 +9,7 @@ import java.util.Map;
 
 import bak.mateusz.sourcemeter.model.ProjectsListResponse;
 import bak.mateusz.sourcemeter.model.Project;
+import bak.mateusz.sourcemeter.network.NetworkCalls;
 import bak.mateusz.sourcemeter.network.ServiceGenerator;
 import bak.mateusz.sourcemeter.network.SourceMeterService;
 import retrofit2.Call;
@@ -22,42 +23,12 @@ public class Application extends android.app.Application {
     @Override
     public void onCreate() {
         try {
-            getProjectsList();
+            NetworkCalls.getProjectsList();
         } catch (IOException e) {
             e.printStackTrace();
         }
         super.onCreate();
     }
 
-    public void getProjectsList() throws IOException {
-        SourceMeterService sourceMeter = ServiceGenerator.createService(SourceMeterService.class);
-        Call<ProjectsListResponse> call = sourceMeter.listProjects();
-        call.enqueue(new Callback<ProjectsListResponse>() {
-            @Override
-            public void onResponse(Call<ProjectsListResponse> call, Response<ProjectsListResponse> response) {
-                List<Project> projectList;
-                projectList = response.body().getProject();
-                EventBus.getDefault().postSticky(projectList);
-
-                Map<Integer, Project> projectsMap = createMap(projectList);
-                EventBus.getDefault().postSticky(projectsMap);
-            }
-
-            @Override
-            public void onFailure(Call<ProjectsListResponse> call, Throwable t) {
-                EventBus.getDefault().post(t);
-            }
-        });
-    }
-
-    private Map<Integer, Project> createMap(List<Project> projects) {
-        /*create map to get project deatils easily by fragment using uid*/
-        Map<Integer, Project> itemMap = new HashMap<Integer, Project>();
-
-        for (Project project : projects) {
-            itemMap.put(project.getUid(),project);
-        }
-        return itemMap;
-    }
 
 }
