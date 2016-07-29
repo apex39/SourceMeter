@@ -18,11 +18,11 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.util.Collections;
-import java.util.Comparator;
+import java.io.IOException;
 import java.util.List;
 
 import bak.mateusz.sourcemeter.model.Project;
+import bak.mateusz.sourcemeter.network.NetworkCalls;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -147,6 +147,11 @@ public class ProjectListActivity extends AppCompatActivity {
                         intent.putExtra(ProjectDetailFragment.ARG_ITEM_ID, holder.mItem.getUid());
                         context.startActivity(intent);
                     }
+                    try {
+                        NetworkCalls.getDevelopersList(holder.mItem.getUid());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             });
         }
@@ -176,15 +181,11 @@ public class ProjectListActivity extends AppCompatActivity {
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void onProjectsListEvent(List<Project> event){
-        this.projectsList = event;
-        Collections.sort(projectsList, new Comparator<Project>() {
-            @Override
-            public int compare(Project project, Project t1) {
-                return project.getProjectName().compareTo(t1.getProjectName());
-            }
-        });
-        snackbar.dismiss();
-        setupRecyclerView((RecyclerView) recyclerView);
+        if(this.projectsList == null) {
+            this.projectsList = event;
+            snackbar.dismiss();
+            setupRecyclerView((RecyclerView) recyclerView);
+        }
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onNetworkError(Throwable t){

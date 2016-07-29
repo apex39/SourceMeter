@@ -15,9 +15,12 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
+import bak.mateusz.sourcemeter.model.DeveloperItem;
 import bak.mateusz.sourcemeter.model.Project;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -44,6 +47,8 @@ public class ProjectDetailFragment extends Fragment  {
      * represents.
      */
     public static final String ARG_ITEM_ID = "item_id";
+    private List<DeveloperItem> developersList;
+
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -78,7 +83,7 @@ public class ProjectDetailFragment extends Fragment  {
         return rootView;
     }
 
-    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    @Subscribe(sticky = true, threadMode = ThreadMode.POSTING)
     public void onProjectsListEvent(Map<Integer, Project> event){
         if (getArguments().containsKey(ARG_ITEM_ID))
             this.mItem = event.get(getArguments().getInt(ARG_ITEM_ID));
@@ -135,10 +140,10 @@ public class ProjectDetailFragment extends Fragment  {
         }
     }
     class DevelopersSection extends StatelessSection {
-        List<Project.StringPair> items;
+        List<DeveloperItem> items;
         String title;
 
-        public DevelopersSection(List<Project.StringPair> items, String title) {
+        public DevelopersSection(List<DeveloperItem> items, String title) {
             super(R.layout.list_header, R.layout.item_developer_list);
             this.title = title;
             this.items = items;
@@ -151,15 +156,15 @@ public class ProjectDetailFragment extends Fragment  {
 
         @Override
         public RecyclerView.ViewHolder getItemViewHolder(View view) {
-            return new ItemViewHolder(view);
+            return new DeveloperItemHolder(view);
         }
 
         @Override
         public void onBindItemViewHolder(RecyclerView.ViewHolder holder, int position) {
             DeveloperItemHolder itemHolder = (DeveloperItemHolder) holder;
-            itemHolder.developerName.setText(items.get(position).getFristString());
-            itemHolder.qualityChange.setText(items.get(position).getFristString());
-            itemHolder.commitsNumber.setText(items.get(position).getFristString());
+            itemHolder.developerName.setText(items.get(position).getName());
+            itemHolder.qualityChange.setText(items.get(position).getQualityChange().toString());
+            itemHolder.commitsNumber.setText(items.get(position).getCommits().toString());
         }
 
         @Override
@@ -198,5 +203,14 @@ public class ProjectDetailFragment extends Fragment  {
             super(view);
             ButterKnife.bind(this, view);
         }
+    }
+    @Subscribe(threadMode = ThreadMode.POSTING)
+    public void onDevelopersListEvent(List<DeveloperItem> event){
+        this.developersList = event;
+
+        sectionAdapter.addSection(new DevelopersSection(developersList,"Developers"));
+        sectionAdapter.notifyDataSetChanged();
+        EventBus.getDefault().removeStickyEvent(event);
+
     }
 }
