@@ -1,5 +1,6 @@
 package bak.mateusz.sourcemeter.network;
 
+import bak.mateusz.sourcemeter.model.DeveloperDetails;
 import bak.mateusz.sourcemeter.model.DevelopersListResponse;
 import bak.mateusz.sourcemeter.model.ProjectsListResponse;
 import retrofit2.Call;
@@ -15,4 +16,8 @@ public interface SourceMeterService {
 
     @GET("projects/{uid}/developers")
     Call<DevelopersListResponse> getDevelopers(@Path("uid") long uid);
+
+    @GET("projects/{uid}/developers/{username}")
+    Call<DeveloperDetails> getDeveloperStatistics(@Path("uid") long uid, @Path("username") String username);
+
 }

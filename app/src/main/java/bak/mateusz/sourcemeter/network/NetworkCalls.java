@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import bak.mateusz.sourcemeter.model.DeveloperDetails;
 import bak.mateusz.sourcemeter.model.DeveloperItem;
 import bak.mateusz.sourcemeter.model.DevelopersListResponse;
 import bak.mateusz.sourcemeter.model.Project;
@@ -76,6 +77,24 @@ public class NetworkCalls {
 
             @Override
             public void onFailure(Call<DevelopersListResponse> call, Throwable t) {
+                EventBus.getDefault().post(t);
+            }
+        });
+    }
+    public static void getDeveloperDetails(int projectUID, String developerName) throws IOException {
+        SourceMeterService sourceMeter = ServiceGenerator.createService(SourceMeterService.class);
+        Call<DeveloperDetails> call = sourceMeter.getDeveloperStatistics(projectUID, developerName);
+        call.enqueue(new Callback<DeveloperDetails>() {
+            @Override
+            public void onResponse(Call<DeveloperDetails> call, Response<DeveloperDetails> response) {
+                DeveloperDetails developerDetails;
+                developerDetails = response.body();
+
+                EventBus.getDefault().post(developerDetails);
+            }
+
+            @Override
+            public void onFailure(Call<DeveloperDetails> call, Throwable t) {
                 EventBus.getDefault().post(t);
             }
         });

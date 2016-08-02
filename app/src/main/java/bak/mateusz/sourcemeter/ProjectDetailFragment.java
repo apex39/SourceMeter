@@ -16,15 +16,14 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
-import java.util.Collections;
-import java.util.Comparator;
+import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
 import bak.mateusz.sourcemeter.model.DeveloperItem;
 import bak.mateusz.sourcemeter.model.Project;
+import bak.mateusz.sourcemeter.network.NetworkCalls;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -44,7 +43,7 @@ public class ProjectDetailFragment extends Fragment  {
     @BindView(R.id.project_details) RecyclerView projectDetails;
     private SectionedRecyclerViewAdapter sectionAdapter;
     private Unbinder unbinder;
-    private Project mItem;
+    private Project project;
     /**
      * The fragment argument representing the item ID that this fragment
      * represents.
@@ -73,13 +72,13 @@ public class ProjectDetailFragment extends Fragment  {
         unbinder = ButterKnife.bind(this,rootView);
         appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
         sectionAdapter = new SectionedRecyclerViewAdapter();
-        sectionAdapter.addSection(new ProjectDetailsSection(Project.getProjectStringDetails(mItem, getContext()),"Project details"));
+        sectionAdapter.addSection(new ProjectDetailsSection(Project.getProjectStringDetails(project, getContext()),"Project details"));
 
         if (appBarLayout != null) {
-            appBarLayout.setTitle(mItem.getProjectName());
+            appBarLayout.setTitle(project.getProjectName());
         }
 
-        if (mItem != null) {
+        if (project != null) {
             projectDetails.setAdapter(sectionAdapter);
             projectDetails.setLayoutManager(new LinearLayoutManager(getContext()));
         }
@@ -89,7 +88,7 @@ public class ProjectDetailFragment extends Fragment  {
     @Subscribe(sticky = true, threadMode = ThreadMode.POSTING)
     public void onProjectsListEvent(Map<Integer, Project> event){
         if (getArguments().containsKey(ARG_ITEM_ID))
-            this.mItem = event.get(getArguments().getInt(ARG_ITEM_ID));
+            this.project = event.get(getArguments().getInt(ARG_ITEM_ID));
     }
 
     @Override
@@ -163,23 +162,35 @@ public class ProjectDetailFragment extends Fragment  {
         }
 
         @Override
-        public void onBindItemViewHolder(RecyclerView.ViewHolder holder, int position) {
+        public void onBindItemViewHolder(RecyclerView.ViewHolder holder, final int position) {
             DeveloperItemHolder itemHolder = (DeveloperItemHolder) holder;
             itemHolder.developerName.setText(items.get(position).getName());
 
             Double qualityChange = items.get(position).getQualityChange();
-            String qualityChangeString = getRoundedString(qualityChange);
-            if(qualityChange < 0){
+            BigDecimal qualityChangeRounded = getRoundedDouble(qualityChange);
+            if(qualityChangeRounded.signum() == -1) {
                 itemHolder.qualityChange.setTextColor(ContextCompat.getColor(getContext(),R.color.negativeChange));
                 itemHolder.qualityChange.setText("");
-            }
-            else {
+            } else if (qualityChangeRounded.signum() == 1) {
                 itemHolder.qualityChange.setTextColor(ContextCompat.getColor(getContext(),R.color.positiveChange));
                 itemHolder.qualityChange.setText("+");
+            } else if (qualityChangeRounded.signum() == 0) {
+                itemHolder.qualityChange.setTextColor(ContextCompat.getColor(getContext(),R.color.noChange));
+                itemHolder.qualityChange.setText("");
             }
-            itemHolder.qualityChange.append(qualityChangeString + "%");
-
+            itemHolder.qualityChange.append(qualityChangeRounded + "%");
             itemHolder.commitsNumber.setText(items.get(position).getCommits().toString());
+
+            itemHolder.rootView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    try {
+                        NetworkCalls.getDeveloperDetails(project.getUid(), developersList.get(position).getName());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
         }
 
         @Override
@@ -206,9 +217,11 @@ public class ProjectDetailFragment extends Fragment  {
         @BindView(R.id.developer_name) TextView developerName;
         @BindView(R.id.quality_change) TextView qualityChange;
         @BindView(R.id.commits_number) TextView commitsNumber;
+        View rootView;
         public DeveloperItemHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
+            rootView = view;
         }
     }
 
@@ -223,15 +236,13 @@ public class ProjectDetailFragment extends Fragment  {
     public void onDevelopersListEvent(List<DeveloperItem> event){
         this.developersList = event;
 
-        sectionAdapter.addSection(new DevelopersSection(developersList,"Developers"));
+        sectionAdapter.addSection(new DevelopersSection(developersList, "Developers"));
         sectionAdapter.notifyDataSetChanged();
         EventBus.getDefault().removeStickyEvent(event);
 
     }
 
-    static final private DecimalFormat df = new DecimalFormat("#.####");
-    private String getRoundedString(double value){
-        df.setRoundingMode(RoundingMode.CEILING);
-        return df.format(value);
+    private BigDecimal getRoundedDouble(Double value){
+        return BigDecimal.valueOf(value).setScale(4, BigDecimal.ROUND_HALF_UP);
     }
 }
