@@ -12,6 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.gordonwong.materialsheetfab.MaterialSheetFab;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -24,6 +26,7 @@ import java.util.Map;
 import bak.mateusz.sourcemeter.model.DeveloperItem;
 import bak.mateusz.sourcemeter.model.Project;
 import bak.mateusz.sourcemeter.network.NetworkCalls;
+import bak.mateusz.sourcemeter.widgets.Fab;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -41,6 +44,9 @@ public class ProjectDetailFragment extends Fragment  {
     View rootView;
     CollapsingToolbarLayout appBarLayout;
     @BindView(R.id.project_details) RecyclerView projectDetails;
+    @BindView(R.id.fab_sheet) View sheetView;
+    @BindView(R.id.overlay) View overlay;
+    @BindView(R.id.charts) Fab chartsButton;
     private SectionedRecyclerViewAdapter sectionAdapter;
     private Unbinder unbinder;
     private Project project;
@@ -50,6 +56,7 @@ public class ProjectDetailFragment extends Fragment  {
      */
     public static final String ARG_ITEM_ID = "item_id";
     private List<DeveloperItem> developersList;
+    private MaterialSheetFab materialSheetFab;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -63,6 +70,7 @@ public class ProjectDetailFragment extends Fragment  {
         super.onCreate(savedInstanceState);
         EventBus.getDefault().register(this);
         activity = this.getActivity();
+        
     }
 
     @Override
@@ -70,6 +78,8 @@ public class ProjectDetailFragment extends Fragment  {
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.project_detail, container, false);
         unbinder = ButterKnife.bind(this,rootView);
+
+        materialSheetFab = new MaterialSheetFab(chartsButton,sheetView,overlay,R.color.background_dim_overlay,R.color.colorAccent);
         appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
         sectionAdapter = new SectionedRecyclerViewAdapter();
         sectionAdapter.addSection(new ProjectDetailsSection(Project.getProjectStringDetails(project, getContext()),"Project details"));
@@ -239,7 +249,6 @@ public class ProjectDetailFragment extends Fragment  {
         sectionAdapter.addSection(new DevelopersSection(developersList, "Developers"));
         sectionAdapter.notifyDataSetChanged();
         EventBus.getDefault().removeStickyEvent(event);
-
     }
 
     private BigDecimal getRoundedDouble(Double value){

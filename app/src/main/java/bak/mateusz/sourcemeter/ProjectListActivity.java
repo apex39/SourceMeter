@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -13,6 +12,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.gordonwong.materialsheetfab.MaterialSheetFab;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -23,6 +24,7 @@ import java.util.List;
 
 import bak.mateusz.sourcemeter.model.Project;
 import bak.mateusz.sourcemeter.network.NetworkCalls;
+import bak.mateusz.sourcemeter.widgets.Fab;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -41,17 +43,16 @@ public class ProjectListActivity extends AppCompatActivity {
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.project_list) View recyclerView;
-    @BindView(R.id.charts) FloatingActionButton chartsButton;
+    @BindView(R.id.charts) Fab chartsButton;
     Snackbar snackbar;
     List<Project> projectsList;
     String checkedProjectName;
-
+    MaterialSheetFab materialSheetFab;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_project_list);
         ButterKnife.bind(this);
-
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
         if(savedInstanceState != null){
@@ -59,7 +60,7 @@ public class ProjectListActivity extends AppCompatActivity {
             this.checkedProjectName = checkedTitle;
         }
 
-        setSnackbar(); //TODO: don't show snackbar for a while at the very beggining, add waiting process
+        setSnackbar(); //TODO: don't show snackbar for a while at the very begining, add waiting process
 
         if (findViewById(R.id.project_detail_container) != null) {
             chartsButton.show();
@@ -68,6 +69,8 @@ public class ProjectListActivity extends AppCompatActivity {
                 toolbar.setSubtitle(checkedProjectName);
             }
         }
+
+
     }
 
     private void setSnackbar() {
