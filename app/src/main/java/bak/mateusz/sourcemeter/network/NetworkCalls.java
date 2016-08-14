@@ -65,7 +65,7 @@ public class NetworkCalls {
             @Override
             public void onResponse(Call<DevelopersListResponse> call, Response<DevelopersListResponse> response) {
                 List<DeveloperItem> developersList;
-                developersList = response.body().getResult();
+                developersList = response.body().getDeveloperItem();
                 Collections.sort(developersList, new Comparator<DeveloperItem>() {
                     @Override
                     public int compare(DeveloperItem developer, DeveloperItem t1) {

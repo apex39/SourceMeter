@@ -11,6 +11,8 @@ import android.support.v7.app.ActionBar;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 
+import bak.mateusz.sourcemeter.widgets.Fab;
+
 /**
  * An activity representing a single Project detail screen. This
  * activity is only used narrow width devices. On tablet-size devices,
@@ -26,7 +28,7 @@ public class ProjectDetailActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        Fab fab = (Fab) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

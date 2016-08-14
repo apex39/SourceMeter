@@ -3,6 +3,7 @@ package bak.mateusz.sourcemeter;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -39,14 +40,12 @@ import io.github.luizgrp.sectionedrecyclerviewadapter.StatelessSection;
  * in two-pane mode (on tablets) or a {@link ProjectDetailActivity}
  * on handsets.
  */
-public class ProjectDetailFragment extends Fragment  {
+public class ProjectDetailFragment extends Fragment {
     Activity activity;
     View rootView;
     CollapsingToolbarLayout appBarLayout;
     @BindView(R.id.project_details) RecyclerView projectDetails;
-    @BindView(R.id.fab_sheet) View sheetView;
-    @BindView(R.id.overlay) View overlay;
-    @BindView(R.id.charts) Fab chartsButton;
+    MaterialSheetFab materialSheetFab;
     private SectionedRecyclerViewAdapter sectionAdapter;
     private Unbinder unbinder;
     private Project project;
@@ -56,7 +55,6 @@ public class ProjectDetailFragment extends Fragment  {
      */
     public static final String ARG_ITEM_ID = "item_id";
     private List<DeveloperItem> developersList;
-    private MaterialSheetFab materialSheetFab;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -78,6 +76,9 @@ public class ProjectDetailFragment extends Fragment  {
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.project_detail, container, false);
         unbinder = ButterKnife.bind(this,rootView);
+        Fab chartsButton = (Fab) getActivity().findViewById(R.id.fab);
+        View sheetView = getActivity().findViewById(R.id.fab_sheet);
+        View overlay = getActivity().findViewById(R.id.overlay);
 
         materialSheetFab = new MaterialSheetFab(chartsButton,sheetView,overlay,R.color.background_dim_overlay,R.color.colorAccent);
         appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);

@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.gordonwong.materialsheetfab.MaterialSheetFab;
+import com.gordonwong.materialsheetfab.MaterialSheetFabEventListener;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -27,7 +28,6 @@ import bak.mateusz.sourcemeter.network.NetworkCalls;
 import bak.mateusz.sourcemeter.widgets.Fab;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 /**
  * An activity representing a list of Projects. This activity
@@ -43,11 +43,13 @@ public class ProjectListActivity extends AppCompatActivity {
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.project_list) View recyclerView;
-    @BindView(R.id.charts) Fab chartsButton;
+    Fab chartsButton;
+    View sheetView, overlay;
     Snackbar snackbar;
     List<Project> projectsList;
     String checkedProjectName;
     MaterialSheetFab materialSheetFab;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,17 +62,30 @@ public class ProjectListActivity extends AppCompatActivity {
             this.checkedProjectName = checkedTitle;
         }
 
-        setSnackbar(); //TODO: don't show snackbar for a while at the very begining, add waiting process
-
+        setSnackbar(); //TODO: don't show snackbar for a while at the very beginning, add waiting process
         if (findViewById(R.id.project_detail_container) != null) {
-            chartsButton.show();
+            chartsButton = (Fab) findViewById(R.id.fab);
+            sheetView = findViewById(R.id.fab_sheet);
+            overlay = findViewById(R.id.overlay);
+
+            materialSheetFab = new MaterialSheetFab(chartsButton,sheetView,overlay,R.color.background_dim_overlay,R.color.colorAccent);
+            materialSheetFab.setEventListener(new MaterialSheetFabEventListener() {
+                @Override
+                public void onShowSheet() {
+
+                }
+
+                @Override
+                public void onHideSheet() {
+
+                }
+            });
+
             mTwoPane = true;
             if(savedInstanceState != null){
                 toolbar.setSubtitle(checkedProjectName);
             }
         }
-
-
     }
 
     private void setSnackbar() {
@@ -84,11 +99,6 @@ public class ProjectListActivity extends AppCompatActivity {
         }).setDuration(Snackbar.LENGTH_INDEFINITE);
     }
 
-    @OnClick(R.id.charts)
-    public void fabAction(View view) {
-        Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show();
-    }
     @Override
     protected void onPause() {
         EventBus.getDefault().unregister(this);
@@ -164,12 +174,12 @@ public class ProjectListActivity extends AppCompatActivity {
             return mValues.size();
         }
 
-        public class ViewHolder extends RecyclerView.ViewHolder {
-            public final View mView;
+        class ViewHolder extends RecyclerView.ViewHolder {
+            final View mView;
             @BindView(R.id.text1) TextView mIdView;
             @BindView(R.id.text2) TextView mContentView;
-            public Project mItem;
-            public ViewHolder(View view) {
+            Project mItem;
+            ViewHolder(View view) {
                 super(view);
                 ButterKnife.bind(this, view);
                 mView = view;

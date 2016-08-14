@@ -22,12 +22,12 @@ import retrofit2.Response;
 public class Application extends android.app.Application {
     @Override
     public void onCreate() {
+        super.onCreate();
         try {
             NetworkCalls.getProjectsList();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        super.onCreate();
     }
 
 

@@ -2,6 +2,7 @@ package bak.mateusz.sourcemeter.widgets;
 
 import android.content.Context;
 import android.support.design.widget.FloatingActionButton;
+import android.util.AttributeSet;
 import android.view.View;
 
 import com.gordonwong.materialsheetfab.AnimatedFab;
@@ -10,6 +11,14 @@ public class Fab extends FloatingActionButton implements AnimatedFab {
 
     public Fab(Context context) {
         super(context);
+    }
+
+    public Fab(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
+
+    public Fab(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
     }
 
     /**
@@ -44,4 +53,6 @@ public class Fab extends FloatingActionButton implements AnimatedFab {
         // be used instead - see the sample app.
         setVisibility(View.INVISIBLE);
     }
+
+
 }
