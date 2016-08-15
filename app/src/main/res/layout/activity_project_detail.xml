@@ -50,12 +50,12 @@
         app:layout_anchor="@+id/project_detail_container"
         app:layout_anchorGravity="top|end" />
 
+
+
+    <include layout="@layout/material_sheet"/>
     <!-- Overlay that dims the screen -->
     <com.gordonwong.materialsheetfab.DimOverlayFrameLayout
         android:id="@+id/overlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-
-    <include layout="@layout/material_sheet"/>
-
 </android.support.design.widget.CoordinatorLayout>

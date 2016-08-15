@@ -45,7 +45,8 @@
     <com.gordonwong.materialsheetfab.DimOverlayFrameLayout
         android:id="@+id/overlay"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        />
 
     <include layout="@layout/material_sheet"/>
 

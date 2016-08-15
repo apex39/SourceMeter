@@ -68,18 +68,8 @@ public class ProjectListActivity extends AppCompatActivity {
             sheetView = findViewById(R.id.fab_sheet);
             overlay = findViewById(R.id.overlay);
 
-            materialSheetFab = new MaterialSheetFab(chartsButton,sheetView,overlay,R.color.background_dim_overlay,R.color.colorAccent);
-            materialSheetFab.setEventListener(new MaterialSheetFabEventListener() {
-                @Override
-                public void onShowSheet() {
+            materialSheetFab = new MaterialSheetFab(chartsButton,sheetView,overlay,R.color.background_card,R.color.colorAccent);
 
-                }
-
-                @Override
-                public void onHideSheet() {
-
-                }
-            });
 
             mTwoPane = true;
             if(savedInstanceState != null){

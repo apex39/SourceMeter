@@ -6,4 +6,7 @@
     <color name="positiveChange">#4fdc27</color>
     <color name="negativeChange">#dc2727</color>
     <color name="noChange">#279ddc</color>
+
+    <color name="background_card">#ffffff</color>
+
 </resources>

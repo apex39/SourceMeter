@@ -4,6 +4,10 @@ apply plugin: 'android-apt'
 android {
     compileSdkVersion 24
     buildToolsVersion '24'
+    dexOptions {
+        maxProcessCount 2
+        javaMaxHeapSize "2g"
+    }
 
     defaultConfig {
         applicationId "bak.mateusz.sourcemeter"
