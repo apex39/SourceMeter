@@ -195,6 +195,7 @@ public class ProjectListActivity extends AppCompatActivity {
         setSnackbar();
         snackbar.show();
     }
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         if(checkedProjectName != null)

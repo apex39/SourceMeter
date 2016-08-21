@@ -17,17 +17,20 @@ android:orientation="vertical">
         android:background="@color/background_card">
         <!-- Recording -->
         <TextView
-            android:id="@+id/fab_sheet_item_recording"
+            android:id="@+id/fab_sheet_item_daytime"
             style="@style/TextAppearance.MaterialSheetFab.Sheet.Item"
-            android:text="Daytime statictics" />
+            android:text="Time of day statistics"
+            />
         <TextView
             android:id="@+id/fab_sheet_item_rd"
             style="@style/TextAppearance.MaterialSheetFab.Sheet.Item"
-            android:text="Daytime statictics" />
+            android:text="Week statistics" />
         <TextView
             android:id="@+id/fab_sheet_item_redding"
             style="@style/TextAppearance.MaterialSheetFab.Sheet.Item"
-            android:text="Daytime statictics" />
+            android:text="Year statistics"
+            />
+
 
 </LinearLayout>
 </android.support.v7.widget.CardView>

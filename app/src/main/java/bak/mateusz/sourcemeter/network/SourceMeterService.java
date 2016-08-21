@@ -3,6 +3,7 @@ package bak.mateusz.sourcemeter.network;
 import bak.mateusz.sourcemeter.model.DeveloperDetails;
 import bak.mateusz.sourcemeter.model.DevelopersListResponse;
 import bak.mateusz.sourcemeter.model.ProjectsListResponse;
+import bak.mateusz.sourcemeter.model.QualityTimelineModel;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
@@ -17,7 +18,6 @@ public interface SourceMeterService {
     @GET("projects/{uid}/developers")
     Call<DevelopersListResponse> getDevelopers(@Path("uid") long uid);
 
-    @GET("projects/{uid}/developers/{username}")
-    Call<DeveloperDetails> getDeveloperStatistics(@Path("uid") long uid, @Path("username") String username);
-
+    @GET("projects/{uid}/qualitytimeline?limit=999999")
+    Call<QualityTimelineModel> getQualityTimeLine(@Path("uid") long uid);
 }

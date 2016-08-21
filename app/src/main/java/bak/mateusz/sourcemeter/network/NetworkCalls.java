@@ -14,6 +14,7 @@ import bak.mateusz.sourcemeter.model.DeveloperItem;
 import bak.mateusz.sourcemeter.model.DevelopersListResponse;
 import bak.mateusz.sourcemeter.model.Project;
 import bak.mateusz.sourcemeter.model.ProjectsListResponse;
+import bak.mateusz.sourcemeter.model.QualityTimelineModel;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -81,20 +82,20 @@ public class NetworkCalls {
             }
         });
     }
-    public static void getDeveloperDetails(int projectUID, String developerName) throws IOException {
+    public static void getQualityTimeline(int projectUID) throws IOException {
         SourceMeterService sourceMeter = ServiceGenerator.createService(SourceMeterService.class);
-        Call<DeveloperDetails> call = sourceMeter.getDeveloperStatistics(projectUID, developerName);
-        call.enqueue(new Callback<DeveloperDetails>() {
+        Call<QualityTimelineModel> call = sourceMeter.getQualityTimeLine(projectUID);
+        call.enqueue(new Callback<QualityTimelineModel>() {
             @Override
-            public void onResponse(Call<DeveloperDetails> call, Response<DeveloperDetails> response) {
-                DeveloperDetails developerDetails;
-                developerDetails = response.body();
+            public void onResponse(Call<QualityTimelineModel> call, Response<QualityTimelineModel> response) {
+                QualityTimelineModel qualityTimelineModel;
+                qualityTimelineModel = response.body();
 
-                EventBus.getDefault().post(developerDetails);
+                EventBus.getDefault().post(qualityTimelineModel);
             }
 
             @Override
-            public void onFailure(Call<DeveloperDetails> call, Throwable t) {
+            public void onFailure(Call<QualityTimelineModel> call, Throwable t) {
                 EventBus.getDefault().post(t);
             }
         });

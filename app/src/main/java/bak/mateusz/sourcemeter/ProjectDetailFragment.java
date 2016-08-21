@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.gordonwong.materialsheetfab.MaterialSheetFab;
+import com.gordonwong.materialsheetfab.MaterialSheetFabEventListener;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -30,6 +31,9 @@ import bak.mateusz.sourcemeter.network.NetworkCalls;
 import bak.mateusz.sourcemeter.widgets.Fab;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnCheckedChanged;
+import butterknife.OnClick;
+import butterknife.Optional;
 import butterknife.Unbinder;
 import io.github.luizgrp.sectionedrecyclerviewadapter.SectionedRecyclerViewAdapter;
 import io.github.luizgrp.sectionedrecyclerviewadapter.StatelessSection;
@@ -40,7 +44,7 @@ import io.github.luizgrp.sectionedrecyclerviewadapter.StatelessSection;
  * in two-pane mode (on tablets) or a {@link ProjectDetailActivity}
  * on handsets.
  */
-public class ProjectDetailFragment extends Fragment {
+public class ProjectDetailFragment extends Fragment implements View.OnClickListener {
     Activity activity;
     View rootView;
     CollapsingToolbarLayout appBarLayout;
@@ -75,12 +79,15 @@ public class ProjectDetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.project_detail, container, false);
-        unbinder = ButterKnife.bind(this,rootView);
+
         Fab chartsButton = (Fab) getActivity().findViewById(R.id.fab);
         View sheetView = getActivity().findViewById(R.id.fab_sheet);
         View overlay = getActivity().findViewById(R.id.overlay);
-
         materialSheetFab = new MaterialSheetFab(chartsButton,sheetView,overlay,R.color.background_dim_overlay,R.color.colorAccent);
+
+        getActivity().findViewById(R.id.fab_sheet_item_daytime).setOnClickListener(this);
+
+        unbinder = ButterKnife.bind(this,rootView);
         appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
         sectionAdapter = new SectionedRecyclerViewAdapter();
         sectionAdapter.addSection(new ProjectDetailsSection(Project.getProjectStringDetails(project, getContext()),"Project details"));
@@ -93,6 +100,8 @@ public class ProjectDetailFragment extends Fragment {
             projectDetails.setAdapter(sectionAdapter);
             projectDetails.setLayoutManager(new LinearLayoutManager(getContext()));
         }
+
+
         return rootView;
     }
 
@@ -100,6 +109,14 @@ public class ProjectDetailFragment extends Fragment {
     public void onProjectsListEvent(Map<Integer, Project> event){
         if (getArguments().containsKey(ARG_ITEM_ID))
             this.project = event.get(getArguments().getInt(ARG_ITEM_ID));
+    }
+
+    public void getQuality()  { //TODO:butterknife catching exceptions, butterknife onClick in fragments
+        try {
+            NetworkCalls.getQualityTimeline(project.getUid());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -113,6 +130,12 @@ public class ProjectDetailFragment extends Fragment {
         super.onDestroyView();
         unbinder.unbind();
     }
+
+    @Override
+    public void onClick(View view) {
+        getQuality();
+    }
+
 
     class ProjectDetailsSection extends StatelessSection {
         List<Project.StringPair> items;
@@ -192,16 +215,7 @@ public class ProjectDetailFragment extends Fragment {
             itemHolder.qualityChange.append(qualityChangeRounded + "%");
             itemHolder.commitsNumber.setText(items.get(position).getCommits().toString());
 
-            itemHolder.rootView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    try {
-                        NetworkCalls.getDeveloperDetails(project.getUid(), developersList.get(position).getName());
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
+
         }
 
         @Override

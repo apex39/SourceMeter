@@ -8,18 +8,24 @@ import android.view.View;
 import com.gordonwong.materialsheetfab.AnimatedFab;
 
 public class Fab extends FloatingActionButton implements AnimatedFab {
+    Context context;
 
     public Fab(Context context) {
         super(context);
+
     }
 
     public Fab(Context context, AttributeSet attrs) {
         super(context, attrs);
+
     }
 
     public Fab(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+
     }
+
+
 
     /**
      * Shows the FAB.
