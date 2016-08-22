@@ -9,12 +9,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import bak.mateusz.sourcemeter.model.DeveloperDetails;
 import bak.mateusz.sourcemeter.model.DeveloperItem;
 import bak.mateusz.sourcemeter.model.DevelopersListResponse;
 import bak.mateusz.sourcemeter.model.Project;
 import bak.mateusz.sourcemeter.model.ProjectsListResponse;
-import bak.mateusz.sourcemeter.model.QualityTimelineModel;
+
+
+import bak.mateusz.sourcemeter.model.ProjectQualityTimeline;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -84,18 +85,18 @@ public class NetworkCalls {
     }
     public static void getQualityTimeline(int projectUID) throws IOException {
         SourceMeterService sourceMeter = ServiceGenerator.createService(SourceMeterService.class);
-        Call<QualityTimelineModel> call = sourceMeter.getQualityTimeLine(projectUID);
-        call.enqueue(new Callback<QualityTimelineModel>() {
+        Call<ProjectQualityTimeline> call = sourceMeter.getQualityTimeLine(projectUID);
+        call.enqueue(new Callback<ProjectQualityTimeline>() {
             @Override
-            public void onResponse(Call<QualityTimelineModel> call, Response<QualityTimelineModel> response) {
-                QualityTimelineModel qualityTimelineModel;
+            public void onResponse(Call<ProjectQualityTimeline> call, Response<ProjectQualityTimeline> response) {
+                ProjectQualityTimeline qualityTimelineModel;
                 qualityTimelineModel = response.body();
 
                 EventBus.getDefault().post(qualityTimelineModel);
             }
 
             @Override
-            public void onFailure(Call<QualityTimelineModel> call, Throwable t) {
+            public void onFailure(Call<ProjectQualityTimeline> call, Throwable t) {
                 EventBus.getDefault().post(t);
             }
         });
