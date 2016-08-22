@@ -53,7 +53,7 @@ public class NetworkCalls {
 
     private static Map<Integer, Project> createProjectsListMap(List<Project> projects) {
         /*create map to get project deatils easily by fragment using uid*/
-        Map<Integer, Project> itemMap = new HashMap<Integer, Project>();
+        Map<Integer, Project> itemMap = new HashMap<>();
 
         for (Project project : projects) {
             itemMap.put(project.getUid(),project);
@@ -91,7 +91,6 @@ public class NetworkCalls {
             public void onResponse(Call<ProjectQualityTimeline> call, Response<ProjectQualityTimeline> response) {
                 ProjectQualityTimeline qualityTimelineModel;
                 qualityTimelineModel = response.body();
-
                 EventBus.getDefault().post(qualityTimelineModel);
             }
 

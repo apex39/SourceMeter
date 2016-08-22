@@ -27,6 +27,8 @@ import java.util.Map;
 
 import bak.mateusz.sourcemeter.model.DeveloperItem;
 import bak.mateusz.sourcemeter.model.Project;
+import bak.mateusz.sourcemeter.model.ProjectQualityTimeline;
+import bak.mateusz.sourcemeter.model.QualityTimelineModel;
 import bak.mateusz.sourcemeter.network.NetworkCalls;
 import bak.mateusz.sourcemeter.widgets.Fab;
 import butterknife.BindView;
@@ -136,6 +138,10 @@ public class ProjectDetailFragment extends Fragment implements View.OnClickListe
         getQuality();
     }
 
+    @Subscribe(threadMode = ThreadMode.POSTING)
+    public void onQualityTimelineEvent(ProjectQualityTimeline event){
+        event.getAverageQuality("99","147188515700");
+    }
 
     class ProjectDetailsSection extends StatelessSection {
         List<Project.StringPair> items;

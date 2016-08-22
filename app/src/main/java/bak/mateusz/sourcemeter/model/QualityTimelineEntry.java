@@ -17,4 +17,16 @@ public class QualityTimelineEntry {
     @SerializedName("committer")
     @Expose
     String committer;
+
+    public double getValue() {
+        return value;
+    }
+
+    public String getRevision() {
+        return revision;
+    }
+
+    public String getCommitter() {
+        return committer;
+    }
 }
