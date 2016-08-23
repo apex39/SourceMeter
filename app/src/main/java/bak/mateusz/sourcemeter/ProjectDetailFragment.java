@@ -140,7 +140,7 @@ public class ProjectDetailFragment extends Fragment implements View.OnClickListe
 
     @Subscribe(threadMode = ThreadMode.POSTING)
     public void onQualityTimelineEvent(ProjectQualityTimeline event){
-        event.getAverageQuality("99","147188515700");
+        event.getAverageQuality("0","1471956593000");
     }
 
     class ProjectDetailsSection extends StatelessSection {
