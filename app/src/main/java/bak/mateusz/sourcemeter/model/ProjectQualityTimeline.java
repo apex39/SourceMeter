@@ -26,28 +26,6 @@ public class ProjectQualityTimeline {
         }
     }
 
-    public double getAverageQuality(String start, String end) {
-        Long startTimestamp = Long.valueOf(start);
-        Long endTimestamp = Long.valueOf(end);
-        double sum = 0, average = 0;
-        int number = 0;
-        Long entryTimestamp;
-        for (Map.Entry<Long, QualityTimelineEntry> entry : qualityTimeline.entrySet()) {
-            entryTimestamp = entry.getKey();
-            if (entryTimestamp >= startTimestamp || entryTimestamp <= endTimestamp) {
-                sum = +entry.getValue().getProjectValue();
-                number++;
-            }
-        }
-        average = sum / number;
-
-        DayStatistics yearStatistics = new DayStatistics(startTimestamp, endTimestamp);
-        yearStatistics.getTimeStatistics()
-        ;
-
-        return average;
-    }
-
     class WeekStatistics {
 
         class Day {
@@ -209,8 +187,6 @@ public class ProjectQualityTimeline {
 
         Time[] timeStatistics = new Time[4];
         Long startTimestamp, endTimestamp;
-
-        long timestamp;
 
         public DayStatistics(Long startTimestamp, Long endTimestamp) {
             this.startTimestamp = startTimestamp;

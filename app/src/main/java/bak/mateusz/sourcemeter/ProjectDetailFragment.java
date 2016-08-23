@@ -1,9 +1,9 @@
 package bak.mateusz.sourcemeter;
 
 import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,14 +11,15 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.DatePicker;
 import android.widget.TextView;
 
 import com.gordonwong.materialsheetfab.MaterialSheetFab;
-import com.gordonwong.materialsheetfab.MaterialSheetFabEventListener;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.joda.time.LocalDate;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -28,14 +29,10 @@ import java.util.Map;
 import bak.mateusz.sourcemeter.model.DeveloperItem;
 import bak.mateusz.sourcemeter.model.Project;
 import bak.mateusz.sourcemeter.model.ProjectQualityTimeline;
-import bak.mateusz.sourcemeter.model.QualityTimelineModel;
 import bak.mateusz.sourcemeter.network.NetworkCalls;
 import bak.mateusz.sourcemeter.widgets.Fab;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnCheckedChanged;
-import butterknife.OnClick;
-import butterknife.Optional;
 import butterknife.Unbinder;
 import io.github.luizgrp.sectionedrecyclerviewadapter.SectionedRecyclerViewAdapter;
 import io.github.luizgrp.sectionedrecyclerviewadapter.StatelessSection;
@@ -135,12 +132,34 @@ public class ProjectDetailFragment extends Fragment implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
+        showDaysPickers();
         getQuality();
     }
 
+    private void showDaysPickers(){
+        LocalDate c = LocalDate.now();
+        int mYear = c.year().get();
+        int mMonth = c.monthOfYear().get();
+        int mDay = c.dayOfYear().get();
+
+        DatePickerDialog dpd = new DatePickerDialog(getContext(),
+                new DatePickerDialog.OnDateSetListener() {
+
+                    @Override
+                    public void onDateSet(DatePicker view, int year,
+                                          int monthOfYear, int dayOfMonth) {
+
+                        // Display Selected date in
+
+                    }
+                }, mYear, mMonth, mDay);
+        dpd.show();
+    }
+
+
     @Subscribe(threadMode = ThreadMode.POSTING)
     public void onQualityTimelineEvent(ProjectQualityTimeline event){
-        event.getAverageQuality("0","1471956593000");
+//        event.getAverageQuality("0","1471956593000");
     }
 
     class ProjectDetailsSection extends StatelessSection {
