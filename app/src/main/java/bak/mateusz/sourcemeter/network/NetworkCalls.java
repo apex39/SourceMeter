@@ -1,5 +1,7 @@
 package bak.mateusz.sourcemeter.network;
 
+import android.accounts.NetworkErrorException;
+
 import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
@@ -30,18 +32,22 @@ public class NetworkCalls {
         call.enqueue(new Callback<ProjectsListResponse>() {
             @Override
             public void onResponse(Call<ProjectsListResponse> call, Response<ProjectsListResponse> response) {
-                List<Project> projectList;
-                projectList = response.body().getProject();
-                Collections.sort(projectList, new Comparator<Project>() {
-                    @Override
-                    public int compare(Project project, Project t1) {
-                        return project.getProjectName().compareTo(t1.getProjectName());
-                    }
-                });
-                EventBus.getDefault().postSticky(projectList);
+                if (response.body() != null) {
+                    List<Project> projectList;
+                    projectList = response.body().getProject();
+                    Collections.sort(projectList, new Comparator<Project>() {
+                        @Override
+                        public int compare(Project project, Project t1) {
+                            return project.getProjectName().compareTo(t1.getProjectName());
+                        }
+                    });
+                    EventBus.getDefault().postSticky(projectList);
 
-                Map<Integer, Project> projectsMap = createProjectsListMap(projectList);
-                EventBus.getDefault().postSticky(projectsMap);
+                    Map<Integer, Project> projectsMap = createProjectsListMap(projectList);
+                    EventBus.getDefault().postSticky(projectsMap);
+                } else {
+                    onFailure(call, new NetworkErrorException("No projects downloaded. Check if service is available."));
+                }
             }
 
             @Override
@@ -53,7 +59,7 @@ public class NetworkCalls {
 
     private static Map<Integer, Project> createProjectsListMap(List<Project> projects) {
         /*create map to get project deatils easily by fragment using uid*/
-        Map<Integer, Project> itemMap = new HashMap<>();
+        Map<Integer, Project> itemMap = new HashMap<Integer, Project>();
 
         for (Project project : projects) {
             itemMap.put(project.getUid(),project);

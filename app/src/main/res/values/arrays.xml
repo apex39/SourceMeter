@@ -8,4 +8,33 @@
         <item>Quality change</item>
         <item>Threshold</item>
     </string-array>
+    <string-array name="days">
+        <item>Monday</item>
+        <item>Tuesday</item>
+        <item>Wednesday</item>
+        <item>Thursday</item>
+        <item>Friday</item>
+        <item>Saturday</item>
+        <item>Sunday</item>
+    </string-array>
+    <string-array name="months">
+        <item>January</item>
+        <item>February</item>
+        <item>March</item>
+        <item>April</item>
+        <item>May</item>
+        <item>June</item>
+        <item>July</item>
+        <item>August</item>
+        <item>September</item>
+        <item>October</item>
+        <item>November</item>
+        <item>December</item>
+    </string-array>
+    <string-array name="timeOfday">
+        <item>8am-12pm</item>
+        <item>12pm-16pm</item>
+        <item>16pm-19pm</item>
+        <item>19pm-8am</item>
+        </string-array>
 </resources>

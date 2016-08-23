@@ -18,7 +18,7 @@ public class QualityTimelineEntry {
     @Expose
     String committer;
 
-    public double getValue() {
+    public double getProjectValue() {
         return value;
     }
 
