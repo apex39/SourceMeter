@@ -38,9 +38,9 @@ public class ProjectQualityTimeline {
 
         long timestamp;
 
-        public WeekStatistics(Long startTimestamp, Long endTimestamp) {
-            this.startTimestamp = startTimestamp;
-            this.endTimestamp = endTimestamp;
+        public WeekStatistics(LocalDate startTimestamp, LocalDate endTimestamp) {
+            this.startTimestamp = startTimestamp.toDateTimeAtCurrentTime().getMillis();
+            this.endTimestamp = endTimestamp.toDateTimeAtCurrentTime().getMillis();
             for(int i = 0; i<weekStatistics.length;i++){
                 weekStatistics[i] = new Day();
             }
@@ -104,9 +104,9 @@ public class ProjectQualityTimeline {
 
         long timestamp;
 
-        public YearStatistics(Long startTimestamp, Long endTimestamp) {
-            this.startTimestamp = startTimestamp;
-            this.endTimestamp = endTimestamp;
+        public YearStatistics(LocalDate startTimestamp, LocalDate endTimestamp) {
+            this.startTimestamp = startTimestamp.toDateTimeAtCurrentTime().getMillis();;
+            this.endTimestamp = endTimestamp.toDateTimeAtCurrentTime().getMillis();;
             for(int i = 0; i< yearStatistics.length; i++){
                 yearStatistics[i] = new Month();
             }
@@ -188,9 +188,9 @@ public class ProjectQualityTimeline {
         Time[] timeStatistics = new Time[4];
         Long startTimestamp, endTimestamp;
 
-        public DayStatistics(Long startTimestamp, Long endTimestamp) {
-            this.startTimestamp = startTimestamp;
-            this.endTimestamp = endTimestamp;
+        public DayStatistics(LocalDate startTimestamp, LocalDate endTimestamp) {
+            this.startTimestamp = startTimestamp.toDateTimeAtCurrentTime().getMillis();;
+            this.endTimestamp = endTimestamp.toDateTimeAtCurrentTime().getMillis();;
             for(int i = 0; i< timeStatistics.length; i++){
                 timeStatistics[i] = new Time();
             }

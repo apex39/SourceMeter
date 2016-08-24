@@ -19,7 +19,10 @@ import com.gordonwong.materialsheetfab.MaterialSheetFab;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.joda.time.DateTimeZone;
+import org.joda.time.Duration;
 import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -136,24 +139,40 @@ public class ProjectDetailFragment extends Fragment implements View.OnClickListe
         getQuality();
     }
 
+    LocalDate startDate, endDate;
+    private static final LocalDateTime JAN_1_1970 = new LocalDateTime(1970, 1, 1, 0, 0);
     private void showDaysPickers(){
-        LocalDate c = LocalDate.now();
-        int mYear = c.year().get();
-        int mMonth = c.monthOfYear().get();
-        int mDay = c.dayOfYear().get();
-
-        DatePickerDialog dpd = new DatePickerDialog(getContext(),
+        if(startDate == null && endDate == null) {
+            startDate = LocalDate.now();
+            endDate = LocalDate.now();
+        }
+        final DatePickerDialog startDatePicker = new DatePickerDialog(getContext(),
                 new DatePickerDialog.OnDateSetListener() {
 
                     @Override
                     public void onDateSet(DatePicker view, int year,
                                           int monthOfYear, int dayOfMonth) {
 
-                        // Display Selected date in
+                        startDate = new LocalDate(year, monthOfYear+1, dayOfMonth);
 
+                        DatePickerDialog finalDatePicker = new DatePickerDialog(getContext(),
+                                new DatePickerDialog.OnDateSetListener() {
+
+                                    @Override
+                                    public void onDateSet(DatePicker view, int year,
+                                                          int monthOfYear, int dayOfMonth) {
+
+                                        endDate = new LocalDate(year, monthOfYear + 1 , dayOfMonth);
+                                    }
+                                }, endDate.getYear(), endDate.getMonthOfYear()-1, endDate.getDayOfMonth());
+
+                        finalDatePicker.getDatePicker().setMinDate(startDate.toDateTimeAtCurrentTime().getMillis());
+                        finalDatePicker.getDatePicker().setMaxDate(System.currentTimeMillis());
+                        finalDatePicker.show();
                     }
-                }, mYear, mMonth, mDay);
-        dpd.show();
+                }, startDate.getYear(), startDate.getMonthOfYear()-1, startDate.getDayOfMonth());
+        startDatePicker.getDatePicker().setMaxDate(System.currentTimeMillis());
+        startDatePicker.show();
     }
 
 
