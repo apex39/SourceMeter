@@ -60,12 +60,13 @@ public class ProjectDetailFragment extends Fragment implements View.OnClickListe
     private SectionedRecyclerViewAdapter sectionAdapter;
     private Unbinder unbinder;
     private Project project;
+
+    ProjectQualityTimeline projectQualityTimeline;
     /**
      * The fragment argument representing the item ID that this fragment
      * represents.
      */
     public static final String ARG_ITEM_ID = "item_id";
-    private List<DeveloperItem> developersList;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -145,10 +146,10 @@ public class ProjectDetailFragment extends Fragment implements View.OnClickListe
         getQuality();
         switch(view.getId()){
             case R.id.fab_sheet_item_daytime:
-                showDaysPickers();
+                showDaysPickers(R.id.fab_sheet_item_daytime);
                 break;
             case R.id.fab_sheet_item_week:
-                showDaysPickers();
+                showDaysPickers(R.id.fab_sheet_item_week);
                 break;
             case R.id.fab_sheet_item_year:
                 showYearPicker();
@@ -159,7 +160,7 @@ public class ProjectDetailFragment extends Fragment implements View.OnClickListe
     }
 
     LocalDate startDate, endDate;
-    private void showDaysPickers(){
+    private void showDaysPickers(final int viewId){
         if(startDate == null && endDate == null) {
             startDate = LocalDate.now();
             endDate = LocalDate.now();
@@ -170,17 +171,24 @@ public class ProjectDetailFragment extends Fragment implements View.OnClickListe
                     @Override
                     public void onDateSet(DatePicker view, int year,
                                           int monthOfYear, int dayOfMonth) {
-
-                        startDate = new LocalDate(year, monthOfYear+1, dayOfMonth);
+                        startDate = new LocalDate(year, monthOfYear + 1, dayOfMonth);
 
                         DatePickerDialog finalDatePicker = new DatePickerDialog(getContext(),
                                 new DatePickerDialog.OnDateSetListener() {
-
                                     @Override
                                     public void onDateSet(DatePicker view, int year,
                                                           int monthOfYear, int dayOfMonth) {
 
                                         endDate = new LocalDate(year, monthOfYear + 1 , dayOfMonth);
+
+                                        switch (viewId){
+                                            case R.id.fab_sheet_item_daytime:
+                                                projectQualityTimeline.getDayStatistics(startDate, endDate);
+                                                break;
+                                            case R.id.fab_sheet_item_week:
+                                                projectQualityTimeline.getWeekStatistics(startDate,endDate);
+                                                break;
+                                        }
                                     }
                                 }, endDate.getYear(), endDate.getMonthOfYear()-1, endDate.getDayOfMonth());
 
@@ -188,7 +196,7 @@ public class ProjectDetailFragment extends Fragment implements View.OnClickListe
                         finalDatePicker.getDatePicker().setMaxDate(System.currentTimeMillis());
                         finalDatePicker.show();
                     }
-                }, startDate.getYear(), startDate.getMonthOfYear()-1, startDate.getDayOfMonth());
+                }, startDate.getYear(), startDate.getMonthOfYear() - 1, startDate.getDayOfMonth());
         startDatePicker.getDatePicker().setMaxDate(System.currentTimeMillis());
         startDatePicker.show();
     }
@@ -212,6 +220,7 @@ public class ProjectDetailFragment extends Fragment implements View.OnClickListe
             @Override
             public void onClick(View v) {
                 year = new LocalDate(np.getValue(),1,1);
+                projectQualityTimeline.getYearStatistics(year);
                 d.dismiss();
             }
         });
@@ -219,10 +228,9 @@ public class ProjectDetailFragment extends Fragment implements View.OnClickListe
 
     }
 
-
     @Subscribe(threadMode = ThreadMode.POSTING)
     public void onQualityTimelineEvent(ProjectQualityTimeline event){
-       // event.getAverageQuality("0","1471956593000");
+        projectQualityTimeline = event;
     }
 
     class ProjectDetailsSection extends StatelessSection {
@@ -347,7 +355,7 @@ public class ProjectDetailFragment extends Fragment implements View.OnClickListe
     }
     @Subscribe(threadMode = ThreadMode.POSTING)
     public void onDevelopersListEvent(List<DeveloperItem> event){
-        this.developersList = event;
+        List<DeveloperItem> developersList = event;
 
         sectionAdapter.addSection(new DevelopersSection(developersList, "Developers"));
         sectionAdapter.notifyDataSetChanged();

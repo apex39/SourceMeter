@@ -26,6 +26,19 @@ public class ProjectQualityTimeline {
         }
     }
 
+    public List<Double> getDayStatistics(LocalDate startTimestamp, LocalDate endTimestamp){
+        DayStatistics dayStatistics = new DayStatistics(startTimestamp, endTimestamp);
+        return dayStatistics.getTimeStatistics();
+    }
+    public List<Double> getYearStatistics(LocalDate startTimestamp){
+        YearStatistics yearStatistics = new YearStatistics(startTimestamp);
+        return yearStatistics.getYearStatistics();
+    }
+    public List<Double> getWeekStatistics(LocalDate startTimestamp, LocalDate endTimestamp){
+        WeekStatistics weekStatistics = new WeekStatistics(startTimestamp, endTimestamp);
+        return weekStatistics.getWeekStatistics();
+    }
+
     class WeekStatistics {
 
         class Day {
@@ -93,7 +106,7 @@ public class ProjectQualityTimeline {
         }
     }
 
-    class YearStatistics {
+    public class YearStatistics {
         class Month {
             int elements = 0;
             double sum = 0;
@@ -102,11 +115,12 @@ public class ProjectQualityTimeline {
         Month[] yearStatistics = new Month[12];
         Long startTimestamp, endTimestamp;
 
-        long timestamp;
+        public YearStatistics(LocalDate startTimestamp) {
+            this.startTimestamp = startTimestamp.toDateTimeAtCurrentTime().getMillis();
 
-        public YearStatistics(LocalDate startTimestamp, LocalDate endTimestamp) {
-            this.startTimestamp = startTimestamp.toDateTimeAtCurrentTime().getMillis();;
-            this.endTimestamp = endTimestamp.toDateTimeAtCurrentTime().getMillis();;
+            LocalDate endDate = new LocalDate(startTimestamp.getYear()+1,startTimestamp.getMonthOfYear(),startTimestamp.getDayOfMonth());
+            this.endTimestamp = endDate.toDateTimeAtCurrentTime().getMillis();
+
             for(int i = 0; i< yearStatistics.length; i++){
                 yearStatistics[i] = new Month();
             }
@@ -178,8 +192,7 @@ public class ProjectQualityTimeline {
         }
     }
 
-
-    class DayStatistics {
+    public class DayStatistics {
         class Time {
             int elements = 0;
             double sum = 0;
