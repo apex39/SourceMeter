@@ -2,16 +2,21 @@ package bak.mateusz.sourcemeter;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.NumberPicker;
 import android.widget.TextView;
 
 import com.gordonwong.materialsheetfab.MaterialSheetFab;
@@ -88,6 +93,8 @@ public class ProjectDetailFragment extends Fragment implements View.OnClickListe
         materialSheetFab = new MaterialSheetFab(chartsButton,sheetView,overlay,R.color.background_dim_overlay,R.color.colorAccent);
 
         getActivity().findViewById(R.id.fab_sheet_item_daytime).setOnClickListener(this);
+        getActivity().findViewById(R.id.fab_sheet_item_week).setOnClickListener(this);
+        getActivity().findViewById(R.id.fab_sheet_item_year).setOnClickListener(this);
 
         unbinder = ButterKnife.bind(this,rootView);
         appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
@@ -135,12 +142,23 @@ public class ProjectDetailFragment extends Fragment implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
-        showDaysPickers();
         getQuality();
+        switch(view.getId()){
+            case R.id.fab_sheet_item_daytime:
+                showDaysPickers();
+                break;
+            case R.id.fab_sheet_item_week:
+                showDaysPickers();
+                break;
+            case R.id.fab_sheet_item_year:
+                showYearPicker();
+                break;
+        }
+
+
     }
 
     LocalDate startDate, endDate;
-    private static final LocalDateTime JAN_1_1970 = new LocalDateTime(1970, 1, 1, 0, 0);
     private void showDaysPickers(){
         if(startDate == null && endDate == null) {
             startDate = LocalDate.now();
@@ -175,10 +193,36 @@ public class ProjectDetailFragment extends Fragment implements View.OnClickListe
         startDatePicker.show();
     }
 
+    LocalDate year;
+    private void showYearPicker() {
+        if(year == null) {
+            year = LocalDate.now();
+        }
+        final Dialog d = new Dialog(getContext());
+        d.setTitle("Choose year");
+        d.setContentView(R.layout.year_dialog);
+        Button b1 = (Button) d.findViewById(R.id.button1);
+        final NumberPicker np = (NumberPicker) d.findViewById(R.id.numberPicker1);
+        np.setMaxValue(new LocalDate().getYear());
+        np.setMinValue(2005);
+        np.setValue(new LocalDate().getYear());
+        np.setWrapSelectorWheel(false);
+        b1.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v) {
+                year = new LocalDate(np.getValue(),1,1);
+                d.dismiss();
+            }
+        });
+        d.show();
+
+    }
+
 
     @Subscribe(threadMode = ThreadMode.POSTING)
     public void onQualityTimelineEvent(ProjectQualityTimeline event){
-//        event.getAverageQuality("0","1471956593000");
+       // event.getAverageQuality("0","1471956593000");
     }
 
     class ProjectDetailsSection extends StatelessSection {

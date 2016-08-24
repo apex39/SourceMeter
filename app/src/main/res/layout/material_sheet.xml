@@ -22,11 +22,11 @@ android:orientation="vertical">
             android:text="Time of day statistics"
             />
         <TextView
-            android:id="@+id/fab_sheet_item_rd"
+            android:id="@+id/fab_sheet_item_week"
             style="@style/TextAppearance.MaterialSheetFab.Sheet.Item"
             android:text="Week statistics" />
         <TextView
-            android:id="@+id/fab_sheet_item_redding"
+            android:id="@+id/fab_sheet_item_year"
             style="@style/TextAppearance.MaterialSheetFab.Sheet.Item"
             android:text="Year statistics"
             />
