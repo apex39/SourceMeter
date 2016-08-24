@@ -7,6 +7,8 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -31,6 +33,7 @@ import org.joda.time.LocalDateTime;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -60,7 +63,7 @@ public class ProjectDetailFragment extends Fragment implements View.OnClickListe
     private SectionedRecyclerViewAdapter sectionAdapter;
     private Unbinder unbinder;
     private Project project;
-
+    Fab chartsButton;
     ProjectQualityTimeline projectQualityTimeline;
     /**
      * The fragment argument representing the item ID that this fragment
@@ -88,7 +91,8 @@ public class ProjectDetailFragment extends Fragment implements View.OnClickListe
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.project_detail, container, false);
 
-        Fab chartsButton = (Fab) getActivity().findViewById(R.id.fab);
+
+        chartsButton = (Fab) getActivity().findViewById(R.id.fab);
         View sheetView = getActivity().findViewById(R.id.fab_sheet);
         View overlay = getActivity().findViewById(R.id.overlay);
         materialSheetFab = new MaterialSheetFab(chartsButton,sheetView,overlay,R.color.background_dim_overlay,R.color.colorAccent);
@@ -220,17 +224,29 @@ public class ProjectDetailFragment extends Fragment implements View.OnClickListe
             @Override
             public void onClick(View v) {
                 year = new LocalDate(np.getValue(),1,1);
-                projectQualityTimeline.getYearStatistics(year);
+                createChart(projectQualityTimeline.getYearStatistics(year));
+                materialSheetFab.hideSheet();
                 d.dismiss();
             }
         });
         d.show();
 
     }
+    private void createChart(List<Double> statistics){
+        ChartFragment chartFragment = new ChartFragment();
+        Bundle args = new Bundle();
+        args.putSerializable("statistics", new ArrayList<>(statistics));
+        chartFragment.setArguments(args);
 
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.project_detail_container, chartFragment);
+        fragmentTransaction.commit();
+    }
     @Subscribe(threadMode = ThreadMode.POSTING)
     public void onQualityTimelineEvent(ProjectQualityTimeline event){
         projectQualityTimeline = event;
+
     }
 
     class ProjectDetailsSection extends StatelessSection {
