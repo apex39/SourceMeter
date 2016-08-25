@@ -55,6 +55,7 @@ import io.github.luizgrp.sectionedrecyclerviewadapter.StatelessSection;
  * on handsets.
  */
 public class ProjectDetailFragment extends Fragment implements View.OnClickListener {
+
     Activity activity;
     View rootView;
     CollapsingToolbarLayout appBarLayout;
@@ -87,12 +88,9 @@ public class ProjectDetailFragment extends Fragment implements View.OnClickListe
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        rootView = inflater.inflate(R.layout.project_detail, container, false);
-
-
+    public void onResume() {
         chartsButton = (Fab) getActivity().findViewById(R.id.fab);
+        chartsButton.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_timeline));
         View sheetView = getActivity().findViewById(R.id.fab_sheet);
         View overlay = getActivity().findViewById(R.id.overlay);
         materialSheetFab = new MaterialSheetFab(chartsButton,sheetView,overlay,R.color.background_dim_overlay,R.color.colorAccent);
@@ -100,6 +98,16 @@ public class ProjectDetailFragment extends Fragment implements View.OnClickListe
         getActivity().findViewById(R.id.fab_sheet_item_daytime).setOnClickListener(this);
         getActivity().findViewById(R.id.fab_sheet_item_week).setOnClickListener(this);
         getActivity().findViewById(R.id.fab_sheet_item_year).setOnClickListener(this);
+        super.onResume();
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        rootView = inflater.inflate(R.layout.project_detail, container, false);
+
+
+
 
         unbinder = ButterKnife.bind(this,rootView);
         appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
@@ -187,10 +195,15 @@ public class ProjectDetailFragment extends Fragment implements View.OnClickListe
 
                                         switch (viewId){
                                             case R.id.fab_sheet_item_daytime:
-                                                projectQualityTimeline.getDayStatistics(startDate, endDate);
+                                                List<Double> dayStatistics = projectQualityTimeline.getDayStatistics(startDate, endDate);
+                                                materialSheetFab.hideSheet();
+                                                createChart(dayStatistics, ChartFragment.DAY);
+
                                                 break;
                                             case R.id.fab_sheet_item_week:
-                                                projectQualityTimeline.getWeekStatistics(startDate,endDate);
+                                                List<Double> weekStatistics = projectQualityTimeline.getWeekStatistics(startDate, endDate);
+                                                materialSheetFab.hideSheet();
+                                                createChart(weekStatistics, ChartFragment.WEEK);
                                                 break;
                                         }
                                     }
@@ -224,7 +237,7 @@ public class ProjectDetailFragment extends Fragment implements View.OnClickListe
             @Override
             public void onClick(View v) {
                 year = new LocalDate(np.getValue(),1,1);
-                createChart(projectQualityTimeline.getYearStatistics(year));
+                createChart(projectQualityTimeline.getYearStatistics(year), ChartFragment.YEAR);
                 materialSheetFab.hideSheet();
                 d.dismiss();
             }
@@ -232,15 +245,17 @@ public class ProjectDetailFragment extends Fragment implements View.OnClickListe
         d.show();
 
     }
-    private void createChart(List<Double> statistics){
+    private void createChart(List<Double> statistics, String statisticType){
         ChartFragment chartFragment = new ChartFragment();
         Bundle args = new Bundle();
-        args.putSerializable("statistics", new ArrayList<>(statistics));
+        args.putSerializable(ChartFragment.STATISTICS, new ArrayList<>(statistics));
+        args.putString(ChartFragment.STAT_TYPE, statisticType);
         chartFragment.setArguments(args);
 
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.project_detail_container, chartFragment);
+        fragmentTransaction.add(R.id.project_detail_container, chartFragment);
+        fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
     @Subscribe(threadMode = ThreadMode.POSTING)
